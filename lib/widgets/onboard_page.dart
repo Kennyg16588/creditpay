@@ -36,7 +36,7 @@ class OnboardPage extends StatelessWidget {
       Text( title,
       textAlign: TextAlign.center,
       style: TextStyle(fontSize: 20.0,
-      color: Colors.blue[900],
+      color: Color(0XFF142B71),
       fontWeight: FontWeight.bold,
       
       ),
@@ -46,7 +46,7 @@ class OnboardPage extends StatelessWidget {
       Text(description,
       textAlign: TextAlign.center,
       style: TextStyle(fontSize: 16.0,
-      color: Colors.blueGrey,
+      color: Color(0xff142B71),
        ),
       
       ),

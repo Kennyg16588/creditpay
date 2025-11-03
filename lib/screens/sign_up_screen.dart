@@ -7,7 +7,7 @@ class SignUpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(backgroundColor: Colors.blue[900],
+      child: Scaffold(backgroundColor: Color(0XFF142B71),
         body: SignUpForm(),    
      ), );
   }

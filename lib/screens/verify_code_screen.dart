@@ -9,7 +9,7 @@ class VerifyCodeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.blue[900],
+        backgroundColor: Color(0XFF142B71),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -25,7 +25,7 @@ class VerifyCodeScreen extends StatelessWidget {
                     child: Icon(
                       Icons.person,
                       size: 50,
-                      color: Colors.blue[900],
+                      color: Color(0XFF142B71),
                     ),
                   ),
                 ],
@@ -51,7 +51,7 @@ class VerifyCodeScreen extends StatelessWidget {
                         Container(height: 150,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          color: Colors.blue[900],
+                          color: Color(0XFF142B71),
                         ),
                         
                           alignment: Alignment.center,
@@ -61,7 +61,7 @@ class VerifyCodeScreen extends StatelessWidget {
      fillColor: Colors.white,
      textStyle: TextStyle(
       fontSize: 24.0,
-      color: Colors.blue[900],
+      color: Color(0XFF142B71),
       fontWeight: FontWeight.bold,),
       
     
@@ -80,7 +80,7 @@ class VerifyCodeScreen extends StatelessWidget {
                             Text(
                               'Didn\'t receive the code?',
                               style: TextStyle(
-                                color: Colors.blue[900],
+                                color: Color(0XFF142B71),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14.0,
                               ),
@@ -92,7 +92,7 @@ class VerifyCodeScreen extends StatelessWidget {
                               child: Text(
                                 'Resend',
                                 style: TextStyle(
-                                  color: Colors.blue[900],
+                                  color: Color(0XFF142B71),
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20.0,
                                 ),
@@ -104,7 +104,7 @@ class VerifyCodeScreen extends StatelessWidget {
                         SizedBox(height: 310.0),
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.blue[900],
+                            color: Color(0XFF142B71),
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                           child: TextButton(

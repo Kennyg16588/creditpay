@@ -7,7 +7,7 @@ class PasswordScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(backgroundColor: Colors.blue[900],
+      child: Scaffold(backgroundColor: Color(0XFF142B71),
         body: Column(crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
@@ -18,7 +18,7 @@ class PasswordScreen extends StatelessWidget {
                       CircleAvatar(
                         backgroundColor: Colors.white,
                         radius: 40,
-                        child: Icon(Icons.person, size: 50, color: Colors.blue[900]),
+                        child: Icon(Icons.person, size: 50, color: Color(0XFF142B71)),
                       ),
                    
                     ],
@@ -46,30 +46,63 @@ class PasswordScreen extends StatelessWidget {
                                       Form(
                                         child: TextFormField(
                                           decoration: InputDecoration(
-                                            labelText: 'Enter password',
-                                            border: OutlineInputBorder(),
-                                            
+                                            labelText: 'Password',
+                                            labelStyle: TextStyle(
+                                              color: Color(0XFF142B71),),
+                                             filled: true,
+                                            fillColor: Color(0xffA4BEFF),
+                                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide.none,
+      ),
                                            ),
+                                           obscureText: true,
                                         ),
                                       ),
-                                      SizedBox(height: 30.0),
+                                      SizedBox(height: 20.0),
                                       TextFormField(
                                           decoration: InputDecoration(
                                             labelText: 'Confirm password',
-                                            border: OutlineInputBorder(),
-                                            
+                                            labelStyle: TextStyle(
+                                              color: Color(0XFF142B71),
+                                            ),
+                                            filled: true,
+                                            fillColor: Color(0xffA4BEFF),
+                                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide.none,
+      ),
                                            ),
+                                           obscureText: true,
                                         ),
                                         SizedBox(height: 30.0),
                                       Row(
                                         children: [
                                           Icon(Icons.check_box_outline_blank,
-                                          color: Colors.blue[900],),
+                                          color: Color(0XFF142B71),),
                                           SizedBox(width: 10,),
                                           Text(
                                                   'I agree to the Term of Service & Privacy Policy',
                                                   style: TextStyle(
-                                                    color: Colors.blue[900],
+                                                    color: Color(0XFF142B71),
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 14.0,
                                                   ),
@@ -80,7 +113,7 @@ class PasswordScreen extends StatelessWidget {
                                       SizedBox(height: 300.0),
                                       Container(
                                         decoration: BoxDecoration(
-                                          color: Colors.blue[900],
+                                          color: Color(0XFF142B71),
                                           borderRadius: BorderRadius.circular(10.0),
                                         ),
                                         child: TextButton(

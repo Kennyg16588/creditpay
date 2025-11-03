@@ -14,7 +14,7 @@ class LoginForm extends StatelessWidget {
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 80,),
-                      Text('Credit Pay' ,style: Constants.kloginbuttonsytle,),
+                      Text('CreditPay' ,style: Constants.kloginbuttonsytle,),
                       SizedBox(height: 20,),
                       Text('Welcome Back!' ,style: Constants.kloginTextstyle,),
                       Text('Enter your email address and password to login' ,style: Constants.kloginTextstyle2,),
@@ -56,12 +56,12 @@ class LoginForm extends StatelessWidget {
                                       SizedBox(height: 40.0),
                                       Container(
                                         decoration: BoxDecoration(
-                                          color: Colors.blue[900],
+                                          color: Color(0XFF142B71),
                                           borderRadius: BorderRadius.circular(10.0),
                                         ),
                                         child: TextButton(
                                           onPressed: () {
-                                             Navigator.pushNamed(context, '/home');
+                                             Navigator.pushNamed(context, '/homepage');
                                           },
                                           child: Text(
                                             'Login',
@@ -81,7 +81,7 @@ class LoginForm extends StatelessWidget {
                                         child: Text(
                                           'Forgot Password?',
                                           style: TextStyle(
-                                            color: Colors.yellow[700],
+                                            color: Color(0XFFFFD602),
                                             fontWeight: FontWeight.bold,
                                             fontSize: 14.0,
                                           ),
@@ -93,7 +93,7 @@ class LoginForm extends StatelessWidget {
                                           Text(
                                               'Don\'t have an account?',
                                               style: TextStyle(
-                                                color: Colors.blue[900],
+                                                color: Color(0XFF142B71),
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 14.0,
                                               ),
@@ -105,7 +105,7 @@ class LoginForm extends StatelessWidget {
                                         child: Text(
                                           'Create Account',
                                           style: TextStyle(
-                                            color: Colors.yellow[700],
+                                            color: Color(0XFFFFD602),
                                             fontWeight: FontWeight.bold,
                                             fontSize: 14.0,
                                           ),

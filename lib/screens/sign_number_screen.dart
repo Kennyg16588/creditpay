@@ -7,7 +7,7 @@ class SignNumberScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(backgroundColor: Colors.blue[900],
+      child: Scaffold(backgroundColor: Color(0XFF142B71),
         body: Column(crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
@@ -18,7 +18,7 @@ class SignNumberScreen extends StatelessWidget {
                       CircleAvatar(
                         backgroundColor: Colors.white,
                         radius: 40,
-                        child: Icon(Icons.person, size: 50, color: Colors.blue[900]),
+                        child: Icon(Icons.person, size: 50, color: Color(0XFF142B71)),
                       ),
                    
                     ],
@@ -45,7 +45,7 @@ class SignNumberScreen extends StatelessWidget {
                                       Text(
                                               'Mobile Number',
                                               style: TextStyle(
-                                                color: Colors.blue[900],
+                                                color: Color(0XFF142B71),
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 14.0,
                                               ),
@@ -58,13 +58,14 @@ class SignNumberScreen extends StatelessWidget {
                                             border: OutlineInputBorder(),
                                             
                                            ),
+                                           keyboardType: TextInputType.phone,
                                         ),
                                       ),
                                       
                                       SizedBox(height: 350.0),
                                       Container(
                                         decoration: BoxDecoration(
-                                          color: Colors.blue[900],
+                                          color: Color(0XFF142B71),
                                           borderRadius: BorderRadius.circular(10.0),
                                         ),
                                         child: TextButton(

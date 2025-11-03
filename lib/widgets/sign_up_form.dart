@@ -14,7 +14,7 @@ class SignUpForm extends StatelessWidget {
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 80,),
-                      Text('Credit Pay' ,style: Constants.kloginbuttonsytle,),
+                      Text('CreditPay' ,style: Constants.kloginbuttonsytle,),
                       SizedBox(height: 20,),
                       
                     ],
@@ -46,7 +46,6 @@ class SignUpForm extends StatelessWidget {
                                       ),
                                       SizedBox(height: 40.0),
                                       TextFormField(
-                                        obscureText: true,
                                         decoration: InputDecoration(
                                           labelText: 'Last Name',
                                           border: OutlineInputBorder(),
@@ -61,16 +60,16 @@ class SignUpForm extends StatelessWidget {
                                         ),
                                         SizedBox(height: 40.0),
                                       TextFormField(
-                                        obscureText: true,
                                         decoration: InputDecoration(
                                           labelText: 'Mobile Number',
                                           border: OutlineInputBorder(),
                                         ),
+                                        keyboardType: TextInputType.number,
                                       ),
                                       SizedBox(height: 80.0),
                                       Container(
                                         decoration: BoxDecoration(
-                                          color: Colors.blue[900],
+                                          color: Color(0XFF142B71),
                                           borderRadius: BorderRadius.circular(10.0),
                                         ),
                                         child: TextButton(

@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class Constants {
 static const  kloginbuttonsytle =
    TextStyle(
-    color: Colors.yellow,
+    color: Color(0XFFFFD602),
     fontWeight: FontWeight.bold,
     fontSize: 30.0,// <-- Italicize the text
   );
   static const  kloginbuttonsytle2 =
    TextStyle(
-    color: Colors.yellow,
+    color: Color(0XFFFFD602),
     fontWeight: FontWeight.bold,
     fontSize: 20.0,// <-- Italicize the text
   );
@@ -27,13 +27,13 @@ static const kloginTextstyle2 = TextStyle(
 
   static const  kSignupTextstyle =
    TextStyle(
-    color: Color.fromARGB(255, 6, 77, 134),
+    color: Color(0XFF142B71),
     fontWeight: FontWeight.bold,
     fontSize: 30.0,// <-- Italicize the text
   );
 
   static const kHomeTextstyle = TextStyle(
-                                color: Color.fromARGB(255, 10, 61, 138),
+                                color: Color(0XFF142B71),
                                 fontSize: 20.0,
                                 fontWeight: FontWeight.bold,
                               );

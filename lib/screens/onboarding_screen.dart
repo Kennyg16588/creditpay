@@ -96,7 +96,7 @@ void _skip(){
                   height: 10.0,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: _currentPage == index ? Colors.blue[900] : Colors.blueGrey[200],
+                    color: _currentPage == index ? Color(0XFF142B71) : Color(0xffA4BEFF),
                   ),
                 ))
               ],
@@ -113,7 +113,7 @@ void _skip(){
                   margin: EdgeInsets.only(left: 80.0, right: 80),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5.0),
-                    color: Colors.blue[900],
+                    color: Color(0XFF142B71),
                   ),
                   child: TextButton(
                     onPressed: _nextPage,
@@ -132,14 +132,14 @@ void _skip(){
                   margin: EdgeInsets.only(left: 80.0, right: 80),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5.0),
-                    color: Colors.yellow[700],
+                    color: Color(0XFFFFD602),
                   ),
                   child: TextButton(
                     onPressed: _skip,
                     child: Text(
                       _currentPage == _onboardData.length - 1 ? 'Get Started' : 'Skip',
                       style: TextStyle(
-                        color: Colors.blue[900],
+                        color: Color(0XFF142B71),
                         fontWeight: FontWeight.bold,
                         fontSize: 16.0,
                       ),

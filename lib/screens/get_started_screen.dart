@@ -7,7 +7,7 @@ class GetStartedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(backgroundColor: Colors.blue[900],
+    return Scaffold(backgroundColor: Color(0XFF142B71),
       body: Column(mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SizedBox( height: 150,),
@@ -18,7 +18,7 @@ class GetStartedScreen extends StatelessWidget {
       Text( 'Fast, Flexible Credit at \nYour Fingertips ',
       textAlign: TextAlign.center,
       style: TextStyle(fontSize: 30.0,
-      color: Colors.yellow[700],
+      color: Color(0XFFFFD602),
       fontWeight: FontWeight.bold,
       fontStyle: FontStyle.italic
       ),
@@ -29,14 +29,14 @@ class GetStartedScreen extends StatelessWidget {
         children: [
           Container(margin: EdgeInsets.only(left: 50.0, right: 50),
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(5.0),
-            color: Colors.yellow[700],),
+            color: Color(0XFFFFD602),),
             child: TextButton(
                 onPressed: (){
                   Navigator.pushNamed(context, '/signup');
                 }, child: Text(
                   'Create an Account',
                 style: TextStyle(
-                  color: Colors.blue[900],
+                  color: Color(0XFF142B71),
                   fontWeight: FontWeight.bold,
                   fontSize: 20.0,
                 ),),),
@@ -45,13 +45,13 @@ class GetStartedScreen extends StatelessWidget {
 
       Container(margin: EdgeInsets.only(left: 50.0, right: 50),
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(5.0),
-            color: Colors.yellow[700],),
+            color: Color(0XFFFFD602),),
         child: TextButton(
             onPressed: (){
               Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
             }, child: Text( 'Login',
             style: TextStyle(
-                  color: Colors.blue[900],
+                  color: Color(0XFF142B71),
                   fontWeight: FontWeight.bold,
                   fontSize: 20.0,
             ),),
@@ -65,12 +65,12 @@ class GetStartedScreen extends StatelessWidget {
                  child: Padding(
                    padding: const EdgeInsets.only(left:70, right: 20),
                    child: Divider(
-                    color: Colors.yellow,),
+                    color: Color(0XFFFFD602),),
                  ),
                ),
                 Text('Continue with',
                 style: TextStyle(
-                  color: Colors.yellow[700],
+                  color: Color(0XFFFFD602),
                   fontWeight: FontWeight.bold,
                   fontSize: 20.0,
             ),),
@@ -78,7 +78,7 @@ class GetStartedScreen extends StatelessWidget {
                    child: Padding(
                      padding: const EdgeInsets.only(left:20, right: 70),
                      child: Divider(
-                                     color: Colors.yellow,),
+                                     color: Color(0XFFFFD602),),
                    ),
                  ),
              ],
@@ -87,14 +87,14 @@ class GetStartedScreen extends StatelessWidget {
               
        Container(margin: EdgeInsets.only(left: 50.0, right: 50, top: 20.0),
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(5.0),
-            border: Border.all(color: Colors.yellow),),
+            border: Border.all(color: Color(0XFFFFD602)),),
         child: Row(mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset('images/google.png'),
             TextButton(
                 onPressed: null, child: Text( 'Google',
                 style: TextStyle(
-                      color: Colors.yellow[700],
+                      color: Color(0XFFFFD602),
                       fontWeight: FontWeight.bold,
                       fontSize: 20.0,
                 ),),
