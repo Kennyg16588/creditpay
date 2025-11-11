@@ -15,19 +15,19 @@ final List<Map<String, dynamic>> _actions = [
       'icon': Icons.request_page,
       'label': 'Loan\nRequest',
       'tooltip': 'Loan\nRequest',
-      'route': '/transfer',
+      'route': '/loanapp',
     },
     {
       'icon': Icons.receipt_long,
       'label': 'Bills\nPayment',
       'tooltip': 'Bills\n Payment',
-      'route': '/transfer',
+      'route': '/bill_payment',
     },
     {
       'icon': Icons.money_off,
       'label': 'Withdraw\n',
       'tooltip': 'Withdraw\n',
-      'route': '/transfer',
+      'route': '/withdraw',
     },
     {
       'icon': Icons.send,

@@ -1,4 +1,5 @@
 
+
 import 'package:flutter/material.dart';
 
 import 'package:creditpay/screens/employer_info_screen.dart';
@@ -23,6 +24,7 @@ import 'package:creditpay/screens/security_settings.dart';
 import 'package:creditpay/screens/tier_screen.dart';
 import 'package:creditpay/screens/transfer_screen.dart';
 import 'package:creditpay/screens/confirm_pin_screen.dart';
+import 'package:creditpay/screens/bill_payment_screen.dart';
 
 
 
@@ -68,6 +70,7 @@ class Creditpay extends StatelessWidget {
         '/tier': (context) => TierScreen(),
         '/transfer': (context) => TransferScreen(),
         '/confirm_pin': (context) => ConfirmPinScreen(),
+        '/bill_payment': (context) => BillPaymentScreen(),
       },
       
     );
