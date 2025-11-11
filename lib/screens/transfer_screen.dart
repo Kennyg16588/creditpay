@@ -202,7 +202,7 @@ class TransferScreen extends StatelessWidget {
                             Navigator.pushNamed(context, '/confirm_pin');
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFFFD700),
+                            backgroundColor: const Color(0xFFFFD602),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
