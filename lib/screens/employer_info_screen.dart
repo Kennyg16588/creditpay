@@ -35,15 +35,15 @@ class _EmployerInfoScreenState extends State<EmployerInfoScreen> {
   void _saveChanges() {
     if (_formKey.currentState?.validate() ?? false) {
       // collect values or send to backend
-      final data = {
-        'companyName': _companyName.text.trim(),
-        'jobTitle': _jobTitle.text.trim(),
-        'doe': _doe.text.trim(),
-        'monthlySalary': _monthlySalary.text.trim(),
-        'companyAddress': _companyAddress.text.trim(),
-        'state': _state.text.trim(),
-        'country': _country.text.trim(),
-      };
+      // final data = {
+      //   'companyName': _companyName.text.trim(),
+      //   'jobTitle': _jobTitle.text.trim(),
+      //   'doe': _doe.text.trim(),
+      //   'monthlySalary': _monthlySalary.text.trim(),
+      //   'companyAddress': _companyAddress.text.trim(),
+      //   'state': _state.text.trim(),
+      //   'country': _country.text.trim(),
+      // };
 
       // show confirmation
       ScaffoldMessenger.of(context).showSnackBar(
@@ -103,8 +103,11 @@ class _EmployerInfoScreenState extends State<EmployerInfoScreen> {
                 child: Form(
                   key: _formKey,
                   child: Container(
+                    decoration: BoxDecoration(
+                      color: Color(0xffA4BEFF),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                     padding: EdgeInsets.all(10),
-                    color: Color(0xffA4BEFF),
                     child: Column(
                       children: [
                         TextFormField(

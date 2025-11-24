@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:creditpay/constants/constants.dart';
 
@@ -8,25 +10,25 @@ class AccountInformationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = [
       {
-        'icon': Icons.person,
+        // 'icon': Icons.person,
         'title': 'Personal Information',
         'subtitle': 'Name, DOB, Address',
         'route': '/personal_info',
       },
       {
-        'icon': Icons.group,
+        // 'icon': Icons.group,
         'title': 'Next of Kin Information',
         'subtitle': 'Contact & relation',
         'route': '/next_of_kin',
       },
       {
-        'icon': Icons.work,
+        // 'icon': Icons.work,
         'title': 'Employment Information',
         'subtitle': 'Employer details',
         'route': '/employment_info',
       },
       {
-        'icon': Icons.upload_file,
+        // 'icon': Icons.upload_file,
         'title': 'Upload Documents',
         'subtitle': 'ID, Payslip, KYC',
         'route': '/upload_doc',
@@ -61,14 +63,14 @@ class AccountInformationScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(20.0),
                 child: ListView.separated(
                   itemCount: items.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  separatorBuilder: (_, __) => const SizedBox(height: 20),
                   itemBuilder: (context, index) {
                     final it = items[index];
                     return _InfoCard(
-                      icon: it['icon'] as IconData,
+                      // icon: it['icon'] as IconData,
                       title: it['title'] as String,
                       subtitle: it['subtitle'] as String,
-                      color: const Color(0xFFF5F8FF),
+                      color: Colors.white,
                       onTap: () => Navigator.pushNamed(context, it['route'] as String),
                     );
                   },
@@ -84,14 +86,14 @@ class AccountInformationScreen extends StatelessWidget {
 }
 
 class _InfoCard extends StatelessWidget {
-  final IconData icon;
+  // final IconData icon;
   final String title;
   final String subtitle;
   final Color color;
   final VoidCallback onTap;
 
   const _InfoCard({
-    required this.icon,
+    // required this.icon,
     required this.title,
     required this.subtitle,
     required this.color,
@@ -103,10 +105,12 @@ class _InfoCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 110,
+        height: 70,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: color,
+          // ignore: deprecated_member_use
+          border: Border.all(color: Color(0xff142B71).withOpacity( 0.3)),
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
@@ -118,11 +122,11 @@ class _InfoCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            CircleAvatar(
-              radius: 28,
-              backgroundColor: const Color(0xFF142B71),
-              child: Icon(icon, color: const Color(0xFFA4BEFF), size: 24),
-            ),
+            // CircleAvatar(
+            //   radius: 28,
+            //   backgroundColor: const Color(0xFF142B71),
+            //   child: Icon(icon, color: const Color(0xFFA4BEFF), size: 24),
+            // ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(

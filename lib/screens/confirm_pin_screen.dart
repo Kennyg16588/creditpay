@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:creditpay/providers/app_providers.dart'; // ensure path matches
 
 class ConfirmPinScreen extends StatefulWidget {
   const ConfirmPinScreen({super.key});
@@ -9,7 +11,6 @@ class ConfirmPinScreen extends StatefulWidget {
 
 class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
   final List<String> _pin = [];
-  final String correctPin = "1234"; // You can replace this with a real value
   int attemptsLeft = 3;
 
   void _onKeyTap(String value) {
@@ -25,9 +26,32 @@ class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
   }
 
   void _onContinue() {
-    String enteredPin = _pin.join('');
+    final enteredPin = _pin.join('');
+    final pinProvider = Provider.of<PinProvider>(context, listen: false);
 
-    if (enteredPin == correctPin) {
+    if (!pinProvider.isPinSet) {
+      // No PIN set yet — prompt user to create one or handle accordingly
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('PIN not set'),
+          content: const Text('You have not set a PIN yet. Please create a PIN in settings or use the Set PIN flow.'),
+          actions: [
+            TextButton(onPressed: () { Navigator.pop(context);
+            Navigator.pushNamed(context, '/set_pin').then((_) {
+              setState(() {}); // rebuild screen after returning
+            });
+          }, child: const Text('Set Pin')),
+          ],
+        ),
+      );
+      setState(() => _pin.clear());
+      return;
+    }
+
+    final verified = pinProvider.verifyPin(enteredPin);
+
+    if (verified) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const TransferSuccessScreen()),
@@ -59,7 +83,7 @@ class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
             onPressed: () => Navigator.pop(context),
           ),
         ),
-      body: Padding(
+        body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,10 +101,8 @@ class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
                 'Kindly enter your 4-digit pin.',
                 style: TextStyle(fontSize: 16, color: Colors.black54),
               ),
-            const SizedBox(height: 60),
-
-            // 🔹 PIN indicators
-            Row(
+              const SizedBox(height: 60),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(4, (index) {
                   return Container(
@@ -104,60 +126,57 @@ class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
                   );
                 }),
               ),
-            const SizedBox(height: 80),
-
-            // 🔹 Numeric keypad
-            Expanded(
-              child: GridView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 90),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  mainAxisSpacing: 25,
-                  crossAxisSpacing: 25,
-                ),
-                itemCount: 12,
-                itemBuilder: (context, index) {
-                  if (index == 9) {
-                    return const SizedBox.shrink();
-                  } else if (index == 10) {
-                    return _numButton('0');
-                  } else if (index == 11) {
-                    return IconButton(
-                      onPressed: _onBackspace,
-                      icon: const Icon(Icons.backspace_outlined),
-                    );
-                  } else {
-                    return _numButton('${index + 1}');
-                  }
-                },
-              ),
-            ),
-
-            // 🔹 Continue button
-            ElevatedButton(
-              onPressed: _pin.length == 4 ? _onContinue : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF142B71),
-                disabledBackgroundColor: Color(0xffE0E0E0),
-                minimumSize: const Size(double.infinity, 55),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+              const SizedBox(height: 80),
+              Expanded(
+                child: GridView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 90),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 25,
+                    crossAxisSpacing: 25,
+                  ),
+                  itemCount: 12,
+                  itemBuilder: (context, index) {
+                    if (index == 9) {
+                      return const SizedBox.shrink();
+                    } else if (index == 10) {
+                      return _numButton('0');
+                    } else if (index == 11) {
+                      return IconButton(
+                        onPressed: _onBackspace,
+                        icon: const Icon(Icons.backspace_outlined),
+                      );
+                    } else {
+                      return _numButton('${index + 1}');
+                    }
+                  },
                 ),
               ),
-              child: const Text(
-                "Continue",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 17,
-                  fontWeight: FontWeight.w600,
+              ElevatedButton(
+                onPressed: _pin.length == 4 ? _onContinue : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF142B71),
+                  disabledBackgroundColor: const Color(0xffE0E0E0),
+                  minimumSize: const Size(double.infinity, 55),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text(
+                  "Continue",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 30),
-          ],
+              const SizedBox(height: 30),
+            ],
+          ),
         ),
       ),
-    ),);
+    );
   }
 
   Widget _numButton(String value) {
@@ -169,7 +188,7 @@ class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
         width: 30,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(color: Color(0xff1E1E1E), width: 1.5),
+          border: Border.all(color: const Color(0xff1E1E1E), width: 1.5),
         ),
         child: Center(
           child: Text(

@@ -37,5 +37,10 @@ static const kloginTextstyle2 = TextStyle(
                                 fontSize: 20.0,
                                 fontWeight: FontWeight.bold,
                               );
+    static const kloanTextstyle = TextStyle(
+                                color: Color(0XFF142B71),
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.bold,
+                              );                          
 
 }

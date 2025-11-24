@@ -38,17 +38,17 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   void _saveChanges() {
     if (_formKey.currentState?.validate() ?? false) {
       // collect values or send to backend
-      final data = {
-        'firstName': _firstName.text.trim(),
-        'lastName': _lastName.text.trim(),
-        'dob': _dob.text.trim(),
-        'gender': _gender.text.trim(),
-        'address': _address.text.trim(),
-        'city': _city.text.trim(),
-        'state': _state.text.trim(),
-        'postalCode': _postalCode.text.trim(),
-        'phone': _phone.text.trim(),
-      };
+      // final data = {
+      //   'firstName': _firstName.text.trim(),
+      //   'lastName': _lastName.text.trim(),
+      //   'dob': _dob.text.trim(),
+      //   'gender': _gender.text.trim(),
+      //   'address': _address.text.trim(),
+      //   'city': _city.text.trim(),
+      //   'state': _state.text.trim(),
+      //   'postalCode': _postalCode.text.trim(),
+      //   'phone': _phone.text.trim(),
+      // };
 
       // show confirmation
       ScaffoldMessenger.of(context).showSnackBar(
@@ -108,8 +108,12 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                 child: Form(
                   key: _formKey,
                   child: Container(
+                    decoration: BoxDecoration(
+                      color: Color(0xffA4BEFF),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                     padding: EdgeInsets.all(10),
-                    color: Color(0xffA4BEFF),
+                    
                     child: Column(
                       children: [
                         TextFormField(

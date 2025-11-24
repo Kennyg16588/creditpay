@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:creditpay/constants/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:creditpay/providers/app_providers.dart';
 
 Future<void> _showUploadOptions(BuildContext context, String title) async {
   showModalBottomSheet(
@@ -108,7 +110,7 @@ class UploadDocument extends StatelessWidget {
                       icon: it['icon'] as IconData,
                       title: it['title'] as String,
                       subtitle: it['subtitle'] as String,
-                      color: const Color(0xFFF5F8FF),
+                      color: Colors.white,
                       onTap: () => _showUploadOptions(context, it['title'] as String),
                     );
                   },
@@ -147,6 +149,9 @@ class UploadDocument extends StatelessWidget {
   await Future.delayed(const Duration(milliseconds: 300));
   
   if (!context.mounted) return;
+  // Navigator.pushReplacementNamed(context, '/homepage');
+  final kyc = Provider.of<KycProvider>(context, listen: false);
+  await kyc.setCompleted(true);
   Navigator.pushReplacementNamed(context, '/homepage');
 }
 
@@ -176,6 +181,7 @@ class _InfoCard extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: color,
+          border: Border.all(color: Color(0xff142B71).withOpacity(0.3)),
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
@@ -187,7 +193,7 @@ class _InfoCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, color: const Color(0xFFA4BEFF), size: 44),
+            Icon(icon, color: const Color(0xFF142B71), size: 44),
             const SizedBox(width: 16),
             Expanded(
               child: Column(

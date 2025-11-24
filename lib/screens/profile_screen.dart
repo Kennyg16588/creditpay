@@ -1,3 +1,4 @@
+import 'package:creditpay/constants/constants.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -62,7 +63,45 @@ class ProfileScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Color(0xFF142B71),
                 borderRadius: BorderRadius.circular(10),
-              ),),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 50,
+                          backgroundColor: Color(0xffD9D9D9B2),
+                          child: IconButton(onPressed:(){}, icon: Icon(Icons.camera_alt,
+                          size: 30,
+                          color: Colors.white,
+                          ),),
+                        ),
+                        SizedBox(width: 130,),
+                        Column(
+                          children: [
+                            Text('Sanni Ajoke',
+                             style: Constants.kloginTextstyle,
+                            ),
+                            SizedBox(height: 10),
+                            Container(decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: Color(0xffFFD602),
+                            ),
+                                height: 38,
+                              child: TextButton(onPressed: (){
+                                Navigator.pushNamed(context, '/tier');
+                              }, child: Text('Upgrade Account',
+                              style: Constants.kHomeTextstyle,))),
+                          ],
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+              ),
             ),
 
             Expanded(
@@ -70,14 +109,14 @@ class ProfileScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(20.0),
                 child: ListView.separated(
                   itemCount: items.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  separatorBuilder: (_, __) => const SizedBox(height: 20),
                   itemBuilder: (context, index) {
                     final it = items[index];
                     final isLogout = it['title'] == 'Log Out';
                     return _InfoCard(
                       icon: it['icon'] as IconData,
                       title: it['title'] as String,
-                      color: const Color(0xFFF5F8FF),
+                      color: Colors.white,
                       onTap: () => Navigator.pushNamed(context, it['route'] as String),
                           textColor: isLogout ? Colors.red : const Color(0xFF142B71),
                     ); 
@@ -118,10 +157,11 @@ class _InfoCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 110,
+        height: 70,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: color,
+          border: Border.all(color: Color(0xff142B71).withOpacity(0.3)),
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
@@ -133,12 +173,8 @@ class _InfoCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            CircleAvatar(
-              radius: 28,
-              backgroundColor: Color(0xFF142B71),
-              child: Icon(icon, color: const Color(0xFFA4BEFF), size: 24),
-            ),
-            const SizedBox(width: 16),
+            Icon(icon, color: const Color(0xFF142B71), size: 24),
+            const SizedBox(width: 30),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

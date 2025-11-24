@@ -15,7 +15,7 @@ final List<Map<String, dynamic>> _actions = [
       'icon': Icons.request_page,
       'label': 'Loan\nRequest',
       'tooltip': 'Loan\nRequest',
-      'route': '/loanapp',
+      'route': '/loan',
     },
     {
       'icon': Icons.receipt_long,
@@ -81,7 +81,9 @@ final List<Map<String, dynamic>> _actions = [
                   CircleAvatar(
                     backgroundColor: Color(0XFF142B71),
                     radius: 35,
-                    child: Icon(Icons.person, size: 50, color: Colors.white),
+                    child: IconButton(onPressed: (){
+                      Navigator.pushNamed(context, '/profile');
+                    }, icon: Icon(Icons.person, size: 50, color: Colors.white),),
                   ),
                   const SizedBox(width: 10),
                   Text('Hi Ajoke!', style: Constants.kSignupTextstyle),

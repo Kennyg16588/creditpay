@@ -30,12 +30,12 @@ class _NextOfKinScreenState extends State<NextOfKinScreen> {
   void _saveChanges() {
     if (_formKey.currentState?.validate() ?? false) {
       // collect values or send to backend
-      final data = {
-        'fullName': _fullName.text.trim(),
-        'phone': _phone.text.trim(),
-        'homeAddress': _homeAddress.text.trim(),
-        'relationship': _relationship.text.trim(),
-      };
+      // final data = {
+      //   'fullName': _fullName.text.trim(),
+      //   'phone': _phone.text.trim(),
+      //   'homeAddress': _homeAddress.text.trim(),
+      //   'relationship': _relationship.text.trim(),
+      // };
 
       // show confirmation
       ScaffoldMessenger.of(context).showSnackBar(
@@ -95,8 +95,11 @@ class _NextOfKinScreenState extends State<NextOfKinScreen> {
                 child: Form(
                   key: _formKey,
                   child: Container(
+                    decoration: BoxDecoration(
+                      color: Color(0xffA4BEFF),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                     padding: EdgeInsets.all(10),
-                    color: Color(0xffA4BEFF),
                     child: Column(
                       children: [
                         TextFormField(

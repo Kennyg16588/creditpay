@@ -17,7 +17,7 @@ class SecuritySettings extends StatelessWidget {
       },
       {
         'title': 'Change Transaction PIN',
-        'route': '/employment_info',
+        'route': '/set_pin',
       },
       {
         'title': 'Reset PIN',
@@ -90,10 +90,12 @@ class _InfoCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 110,
+        height: 70,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
+          color:Colors.white,
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Color(0xff142B71).withOpacity(0.3)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.04),
