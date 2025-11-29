@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:creditpay/screens/confirm_pin_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:creditpay/providers/app_providers.dart';
 
 class TransferScreen extends StatelessWidget {
   const TransferScreen({super.key});
@@ -198,9 +201,11 @@ class TransferScreen extends StatelessWidget {
                         width: double.infinity,
                         height: 50,
                         child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/confirm_pin');
-                          },
+                          onPressed: () {Provider.of<TransactionFlowProvider>(context, listen: false)
+                          .setPendingAction(TransactionType.transfer, payload: {});
+                      Navigator.push(context,
+                       MaterialPageRoute(builder: (_) =>  ConfirmPinScreen()),
+);}, 
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFFFD602),
                             shape: RoundedRectangleBorder(

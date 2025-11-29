@@ -215,7 +215,7 @@ class LoanRepaymentPage extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Image.asset("images/image1.png", height: 32),
+          Image.asset("images/access.png", height: 32),
           const SizedBox(width: 12),
           const Expanded(
             child: Column(

@@ -11,32 +11,32 @@ class BillPaymentScreen extends StatefulWidget {
 class _BillPaymentScreenState extends State<BillPaymentScreen> {
   final List<Map<String, dynamic>> _actions = [
     {
-      'image': 'images/image1.png',
+      'image': 'images/airtime.jpg',
       'label': 'Airtime',
       'route': '/airtime',
     },
     {
-      'image': 'images/image2.png',
+      'image': 'images/data.png',
       'label': 'Data',
       'route': '/data',
     },
     {
-      'image': 'images/image3.png',
+      'image': 'images/betting.jpg',
       'label': 'Betting',
       'route': '/betting',
     },
     {
-      'image': 'images/image4.png',
+      'image': 'images/electricity.jpg',
       'label': 'Electricity',
       'route': '/elect',
     },
     {
-      'image': 'images/image4.png',
+      'image': 'images/shopping.png',
       'label': 'Shopping',
       'route': '/shop',
     },
     {
-      'image': 'images/image4.png',
+      'image': 'images/tv.png',
       'label': 'TV',
       'route': '/tv',
     },

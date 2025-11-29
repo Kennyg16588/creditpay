@@ -31,6 +31,8 @@ import 'package:creditpay/screens/loan_bank_verify_screen.dart';
 import 'package:creditpay/screens/loan_application_screen.dart';
 import 'package:creditpay/screens/loan_repay_screen.dart';
 import 'package:creditpay/screens/set_pin_screen.dart';
+import 'package:creditpay/screens/airtime_screen.dart';
+import 'package:creditpay/screens/data_screen.dart';
 
 
 
@@ -53,6 +55,9 @@ class Creditpay extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => LoanRepaymentProvider()),
         ChangeNotifierProvider(create: (_) => PinProvider()),
         ChangeNotifierProvider(create: (_) => TransactionProvider()),
+        ChangeNotifierProvider(create: (_) => AirtimeProvider()),
+        ChangeNotifierProvider(create: (_) => TransactionFlowProvider()),
+
       ],
       child: MaterialApp(
         theme: ThemeData(
@@ -92,6 +97,8 @@ class Creditpay extends StatelessWidget {
           '/loan_application': (context) => LoanApplicationPage(),
           '/loan_repay': (context) => LoanRepaymentPage(),
           '/set_pin': (context) => SetPinScreen(),
+          '/airtime': (context) => AirtimeScreen(),
+          '/data': (context) => DataScreen()
         },
       ),
     );

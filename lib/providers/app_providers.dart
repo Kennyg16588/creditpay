@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:creditpay/services/loan_repayment_service.dart';
 import 'package:creditpay/models/loan_repayment_model.dart';
+import 'package:creditpay/screens/success_screen.dart';
 
 // Example auth provider (expand as needed)
 class AuthProvider extends ChangeNotifier {
@@ -174,5 +176,91 @@ class PinProvider extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('user_pin');
     notifyListeners();
+  }
+}
+
+class AirtimeProvider extends ChangeNotifier {
+  String? selectedProvider; // Big icons: MTN, Airtel
+  String? selectedNetwork;  // Small icons: MTN, Airtel, Glo, Etisalat
+
+  int? amount;
+  String phoneNumber = '';
+
+  void setProvider(String provider) {
+    selectedProvider = provider;
+    notifyListeners();
+  }
+
+  void setNetwork(String network) {
+    selectedNetwork = network;
+    notifyListeners();
+  }
+
+  void setAmount(int value) {
+    amount = value;
+    notifyListeners();
+  }
+
+  void setPhoneNumber(String phone) {
+    phoneNumber = phone;
+    notifyListeners();
+  }
+
+  bool get isValid =>
+      amount != null &&
+      amount! > 0 &&
+      phoneNumber.isNotEmpty &&
+      selectedNetwork != null;
+}
+
+
+enum TransactionType {
+  transfer,
+  billPayment,
+  withdrawal,
+  loanRepayment,
+  airtimePurchase,
+  other,
+}
+
+class TransactionFlowProvider extends ChangeNotifier {
+  TransactionType? _pendingAction;
+  Map<String, dynamic>? _payload;
+
+  TransactionType? get pendingAction => _pendingAction;
+  Map<String, dynamic>? get payload => _payload;
+
+  /// Set the transaction that requires PIN verification.
+  void setPendingAction(TransactionType type, {required Map<String, String> payload}) {
+    _pendingAction = type;
+     _payload = payload;
+    
+    notifyListeners();
+  }
+
+  /// Clear after success.
+  void clear() {
+    _pendingAction = null;
+    _payload = null;
+    notifyListeners();
+  }
+
+  /// Resolve the correct success screen from the type.
+  Widget resolveSuccessScreen() {
+    switch (_pendingAction) {
+      case TransactionType.transfer:
+        return const TransferSuccessScreen();
+      case TransactionType.billPayment:
+        return const BillPaymentSuccessScreen();
+      case TransactionType.withdrawal:
+        return const WithdrawalSuccessScreen();
+      case TransactionType.loanRepayment:
+        return const LoanRepaymentSuccessScreen();
+      case TransactionType.airtimePurchase:
+        return const AirtimeSuccessScreen();
+      case TransactionType.other:
+      default:
+        return const GenericSuccessScreen();
+    }
   }
 }

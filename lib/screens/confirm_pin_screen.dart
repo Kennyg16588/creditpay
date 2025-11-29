@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:creditpay/providers/app_providers.dart'; // ensure path matches
+import 'package:creditpay/providers/app_providers.dart';
+
 
 class ConfirmPinScreen extends StatefulWidget {
-  const ConfirmPinScreen({super.key});
+
+   ConfirmPinScreen({
+    super.key,
+  });
 
   @override
   State<ConfirmPinScreen> createState() => _ConfirmPinScreenState();
@@ -12,54 +16,67 @@ class ConfirmPinScreen extends StatefulWidget {
 class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
   final List<String> _pin = [];
   int attemptsLeft = 3;
+  bool _verifying = false;
 
   void _onKeyTap(String value) {
-    if (_pin.length < 4) {
-      setState(() => _pin.add(value));
-    }
+    if (_pin.length < 4 && !_verifying) setState(() => _pin.add(value));
   }
 
   void _onBackspace() {
-    if (_pin.isNotEmpty) {
-      setState(() => _pin.removeLast());
+    if (_pin.isNotEmpty && !_verifying) setState(() => _pin.removeLast());
+  }
+
+  Future<void> _promptSetPin() async {
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: const Text('PIN not set'),
+        content: const Text('You have not set a PIN yet. Create a PIN now to proceed with transactions.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Set PIN')),
+        ],
+      ),
+    );
+
+    if (result == true) {
+      await Navigator.pushNamed(context, '/set_pin');
+      setState(() {_pin.clear();}); // refresh after returning
     }
   }
 
-  void _onContinue() {
+  Future<void> _onContinue() async {
+    if (_verifying) return;
     final enteredPin = _pin.join('');
     final pinProvider = Provider.of<PinProvider>(context, listen: false);
+    final flowProvider = Provider.of<TransactionFlowProvider>(context, listen: false);
 
     if (!pinProvider.isPinSet) {
-      // No PIN set yet — prompt user to create one or handle accordingly
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: const Text('PIN not set'),
-          content: const Text('You have not set a PIN yet. Please create a PIN in settings or use the Set PIN flow.'),
-          actions: [
-            TextButton(onPressed: () { Navigator.pop(context);
-            Navigator.pushNamed(context, '/set_pin').then((_) {
-              setState(() {}); // rebuild screen after returning
-            });
-          }, child: const Text('Set Pin')),
-          ],
-        ),
-      );
-      setState(() => _pin.clear());
-      return;
-    }
+      await _promptSetPin();
+       if (pinProvider.isPinSet) {
+      setState(() {
+        _pin.clear();
+        _verifying = false;
+      });
+      return; 
+    }}
 
-    final verified = pinProvider.verifyPin(enteredPin);
+    setState(() => _verifying = true);
+    await Future.delayed(const Duration(milliseconds: 200));
+    if (!mounted) return;
+if (pinProvider.verifyPin(enteredPin)) {
+      final successScreen = flowProvider.resolveSuccessScreen();
+      flowProvider.clear();
 
-    if (verified) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const TransferSuccessScreen()),
+        MaterialPageRoute(builder: (_) => successScreen),
       );
     } else {
       setState(() {
         attemptsLeft--;
         _pin.clear();
+        _verifying = false;
       });
 
       showDialog(
@@ -72,6 +89,7 @@ class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isComplete = _pin.length == 4 && !_verifying;
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -137,38 +155,36 @@ class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
                   ),
                   itemCount: 12,
                   itemBuilder: (context, index) {
-                    if (index == 9) {
-                      return const SizedBox.shrink();
-                    } else if (index == 10) {
-                      return _numButton('0');
-                    } else if (index == 11) {
+                    if (index == 9) return const SizedBox.shrink();
+                    if (index == 10) return _numButton('0');
+                    if (index == 11) {
                       return IconButton(
                         onPressed: _onBackspace,
                         icon: const Icon(Icons.backspace_outlined),
                       );
-                    } else {
-                      return _numButton('${index + 1}');
                     }
+                    return _numButton('${index + 1}');
                   },
                 ),
               ),
-              ElevatedButton(
-                onPressed: _pin.length == 4 ? _onContinue : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF142B71),
-                  disabledBackgroundColor: const Color(0xffE0E0E0),
-                  minimumSize: const Size(double.infinity, 55),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed: isComplete ? _onContinue : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF142B71),
+                    disabledBackgroundColor: const Color(0xffE0E0E0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
-                ),
-                child: const Text(
-                  "Continue",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  child: _verifying
+                      ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                      : const Text(
+                          "Continue",
+                          style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
+                        ),
                 ),
               ),
               const SizedBox(height: 30),
@@ -201,9 +217,6 @@ class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
   }
 }
 
-//
-// 🟥 Incorrect PIN Modal
-//
 class IncorrectPinScreen extends StatelessWidget {
   final int attemptsLeft;
   const IncorrectPinScreen({super.key, required this.attemptsLeft});
@@ -268,102 +281,4 @@ class IncorrectPinScreen extends StatelessWidget {
   }
 }
 
-//
-// 🟩 Transfer Success Screen
-//
-class TransferSuccessScreen extends StatelessWidget {
-  const TransferSuccessScreen({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF142B71),
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  height: 176,
-                  width: 168,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(colors: [
-                      Color(0xff52D17C),
-                      Color(0xff22918B),
-                    ]),
-                  ),
-                  child: const Center(
-                    child: Icon(Icons.check,
-                        color: Colors.white, size: 90),
-                  ),
-                ),
-                const SizedBox(height: 30),
-                const Text(
-                  'Transferred\nSuccessfully',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Dear user, your amount has been transferred\nsuccessfully. You can view your receipt below.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 15,
-                  ),
-                ),
-                const SizedBox(height: 50),
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFFFD602),
-                    minimumSize: const Size(double.infinity, 50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Text(
-                    'View Details',
-                    style: TextStyle(
-                      color: Color(0xFF142B71),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/homepage');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFFFD602),
-                    minimumSize: const Size(double.infinity, 50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Text(
-                    'Continue',
-                    style: TextStyle(
-                      color: Color(0xFF142B71),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
