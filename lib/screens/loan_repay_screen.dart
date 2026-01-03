@@ -4,13 +4,52 @@ import 'package:provider/provider.dart';
 import 'package:creditpay/providers/app_providers.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class LoanRepaymentPage extends StatelessWidget {
+class LoanRepaymentPage extends StatefulWidget {
   const LoanRepaymentPage({super.key});
+
+  @override
+  State<LoanRepaymentPage> createState() => _LoanRepaymentPageState();
+}
+
+class _LoanRepaymentPageState extends State<LoanRepaymentPage> {
+  late TextEditingController _amountController;
+
+  @override
+  void initState() {
+    super.initState();
+    _amountController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<LoanRepaymentProvider>();
+    final loanProvider = context.watch<LoanProvider>();
+    final activeLoan = loanProvider.activeLoan;
     final summary = provider.summary;
+
+    // Sync controller with provider if needed when page loads or state changes externally
+    // However, avoid overriding user input while typing.
+    // Since we handle button taps manually, we can rely on that for mode switches.
+
+    if (activeLoan == null) {
+      return Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: Colors.white,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Color(0xFF1A2F75)),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
+        body: Center(child: Text("No active loan to repay")),
+      );
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -50,15 +89,64 @@ class LoanRepaymentPage extends StatelessWidget {
                 _paymentOption(
                   title: "Part Payment",
                   selected: provider.isPartPayment,
-                  onTap: () => provider.togglePaymentType(true),
+                  onTap: () {
+                    provider.togglePaymentType(true, activeLoan.balance);
+                    // Clear or keep previous text? Let's clear for fresh start or keep.
+                    // If we want to be helpful, we can keep the entered amount if it was there.
+                    // But generally, clearing avoids confusion if they switch back and forth.
+                    _amountController.clear();
+                    provider.updateAmount("");
+                  },
                 ),
                 SizedBox(width: 10.w),
                 _paymentOption(
                   title: "Full Payment",
                   selected: !provider.isPartPayment,
-                  onTap: () => provider.togglePaymentType(false),
+                  onTap: () {
+                    provider.togglePaymentType(false, activeLoan.balance);
+                    _amountController.text = activeLoan.balance.toStringAsFixed(
+                      0,
+                    );
+                  },
                 ),
               ],
+            ),
+
+            SizedBox(height: 20.h),
+
+            // Amount Owed Box
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(15.r),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF4F6FF),
+                borderRadius: BorderRadius.circular(10.r),
+                border: Border.all(
+                  color: const Color(0xFF142B71).withOpacity(0.2),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Loan Amount",
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: const Color(0xFF142B71),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 5.h),
+                  Text(
+                    "₦${activeLoan.balance.toStringAsFixed(0)}",
+                    style: TextStyle(
+                      fontSize: 24.sp,
+                      color: const Color(0xFF142B71),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
             ),
 
             SizedBox(height: 45.h),
@@ -68,17 +156,23 @@ class LoanRepaymentPage extends StatelessWidget {
             // -----------------------
             Text(
               "Enter the amount you want to pay",
-              style: Constants.kHomeTextstyle,
+              style: Constants.kloanTextstyle,
             ),
             SizedBox(height: 10.h),
 
             TextField(
-              keyboardType: TextInputType.number,
+              style: Constants.kloanTextstyle,
+              keyboardType: TextInputType.phone,
+              // If full payment is selected, disable editing or just show value?
+              // Usually full payment locks the field.
+              enabled: provider.isPartPayment,
+              controller: _amountController,
               onChanged: provider.updateAmount,
               decoration: InputDecoration(
-                hintText: "₦35,000",
+                hintText: "₦${activeLoan.balance.toStringAsFixed(0)}",
                 hintStyle: Constants.kloanTextstyle,
                 prefixStyle: Constants.kloanTextstyle,
+                suffixStyle: Constants.kloanTextstyle,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12.r),
                 ),
@@ -97,20 +191,20 @@ class LoanRepaymentPage extends StatelessWidget {
             Text("Pay with", style: Constants.kHomeTextstyle),
             SizedBox(height: 10.h),
 
-            _bankTile(),
+            _bankTile(), // This function below creates the UI for bank/wallet
 
             SizedBox(height: 45.h),
 
             Text(
-              "You are about to make a loan repayment of",
-              style: Constants.kHomeTextstyle,
+              "You are about to make a loan repayment of :",
+              style: Constants.kloanTextstyle,
             ),
 
             SizedBox(height: 15.h),
 
             _summaryBox(summary),
 
-            SizedBox(height: 125.h),
+            SizedBox(height: 20.h),
 
             // -----------------------
             // Make Payment Button
@@ -131,19 +225,13 @@ class LoanRepaymentPage extends StatelessWidget {
                                 backgroundColor: Colors.green,
                               ),
                             );
-                            Navigator.pushReplacement(
+                            Navigator.pushAndRemoveUntil(
                               context,
-                              MaterialPageRoute(
-                                builder: (_) => const LoanApproval(),
-                              ),
+                              MaterialPageRoute(builder: (_) => LoanRepay()),
+                              (route) => false,
                             );
                           } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Payment Failed"),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
+                            // Error handling done in provider
                           }
                         },
                 style: ElevatedButton.styleFrom(
@@ -232,21 +320,28 @@ class LoanRepaymentPage extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Image.asset("images/access.png", height: 32.h),
+          Icon(
+            Icons.account_balance_wallet,
+            color: Color(0xFF142B71),
+            size: 32.h,
+          ),
           SizedBox(width: 12.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Access Bank***0016", style: Constants.kloanTextstyle),
+                Text("Wallet Balance", style: Constants.kHomeTextstyle),
                 SizedBox(height: 3.h),
-                Text("Service fee 0.00", style: Constants.kloanTextstyle),
+                // We could show actual wallet balance here if available
+                Text(
+                  "Funds will be deducted from wallet",
+                  style: Constants.kloanTextstyle.copyWith(
+                    fontSize: 12.sp,
+                    color: Colors.grey,
+                  ),
+                ),
               ],
             ),
-          ),
-          TextButton(
-            onPressed: () {},
-            child: Text('Change', style: Constants.kloanTextstyle),
           ),
         ],
       ),
@@ -290,73 +385,85 @@ class LoanRepaymentPage extends StatelessWidget {
   }
 }
 
-class LoanApproval extends StatelessWidget {
-  const LoanApproval({super.key});
+class LoanRepay extends StatelessWidget {
+  const LoanRepay({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.r),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  height: 176.h,
-                  width: 168.w,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      colors: [
-                        const Color(0xff52D17C),
-                        const Color(0xff22918B),
-                      ],
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/homepage',
+            (route) => false,
+          );
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.r),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 176.h,
+                    width: 168.w,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [
+                          const Color(0xff52D17C),
+                          const Color(0xff22918B),
+                        ],
+                      ),
+                    ),
+                    child: const Center(
+                      child: Icon(Icons.check, color: Colors.white, size: 90),
                     ),
                   ),
-                  child: const Center(
-                    child: Icon(Icons.check, color: Colors.white, size: 90),
-                  ),
-                ),
-                SizedBox(height: 30.h),
-                Text(
-                  'Repayment Sucessful',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Color(0xFF142B71),
-                    fontSize: 26.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                SizedBox(height: 170.h),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      '/homepage',
-                      (route) => false,
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF142B71),
-                    minimumSize: Size(double.infinity, 50.sp),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                  ),
-                  child: Text(
-                    'Go back to Home',
+                  SizedBox(height: 30.h),
+                  Text(
+                    'Repayment Sucessful',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Color(0xFF142B71),
+                      fontSize: 26.sp,
                       fontWeight: FontWeight.bold,
-                      fontSize: 18.sp,
                     ),
                   ),
-                ),
-              ],
+
+                  SizedBox(height: 170.h),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        '/homepage',
+                        (route) => false,
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF142B71),
+                      minimumSize: Size(double.infinity, 50.sp),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                    ),
+                    child: Text(
+                      'Go back to Home',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18.sp,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

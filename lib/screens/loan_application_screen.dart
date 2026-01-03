@@ -13,11 +13,8 @@ class LoanApplicationPage extends StatefulWidget {
 
 class _LoanApplicationPageState extends State<LoanApplicationPage> {
   final purposeController = TextEditingController();
-  final periodController = TextEditingController(text: "6 months");
+  final periodController = TextEditingController();
   final interestController = TextEditingController(text: "5%");
-  final installmentController = TextEditingController(
-    text: "₦35,000 Per month",
-  );
 
   bool agreeToTerms = false;
 
@@ -66,25 +63,32 @@ class _LoanApplicationPageState extends State<LoanApplicationPage> {
             // PURPOSE
             Text("Purpose", style: Constants.kHomeTextstyle),
             SizedBox(height: 5.h),
-            _inputField(controller: purposeController, hint: "Reason for loan"),
+            _inputField(
+              controller: purposeController,
+              hint: "Reason for loan",
+              keyboardType: TextInputType.text,
+            ),
             SizedBox(height: 20.h),
 
             // PERIOD
             Text("Period", style: Constants.kHomeTextstyle),
             SizedBox(height: 5.h),
-            _inputField(controller: periodController, hint: ""),
+            _inputField(
+              controller: periodController,
+              hint: "Number of months for Repayment",
+              keyboardType: TextInputType.number,
+            ),
             SizedBox(height: 20.h),
 
             // INTEREST
             Text("Interest", style: Constants.kHomeTextstyle),
             SizedBox(height: 5.h),
-            _inputField(controller: interestController, hint: ""),
-            SizedBox(height: 20.h),
-
-            // INSTALLMENT
-            Text("Installment", style: Constants.kHomeTextstyle),
-            SizedBox(height: 5.h),
-            _inputField(controller: installmentController, hint: ""),
+            _inputField(
+              controller: interestController,
+              hint: "",
+              keyboardType: TextInputType.number,
+              readOnly: true,
+            ),
             SizedBox(height: 20.h),
 
             // TERMS CHECKBOX
@@ -99,7 +103,7 @@ class _LoanApplicationPageState extends State<LoanApplicationPage> {
                 const Text("Accept our Terms and Conditions"),
               ],
             ),
-            SizedBox(height: 20.h),
+            SizedBox(height: 60.h),
 
             // CONFIRM BUTTON
             SizedBox(
@@ -108,16 +112,46 @@ class _LoanApplicationPageState extends State<LoanApplicationPage> {
                 onPressed:
                     (agreeToTerms && !context.watch<LoanProvider>().isLoading)
                         ? () async {
-                          bool success = await context
-                              .read<LoanProvider>()
-                              .applyForLoan(context);
+                          final provider = context.read<LoanProvider>();
+                          final amountStr = provider.selectedAmount;
+                          // Clean amount
+                          double amount =
+                              double.tryParse(
+                                amountStr.replaceAll(RegExp(r'[^0-9]'), ""),
+                              ) ??
+                              0.0;
+
+                          // Parse period
+                          int period = 1; // Default
+                          final periodMatch = RegExp(
+                            r'(\d+)',
+                          ).firstMatch(periodController.text);
+                          if (periodMatch != null) {
+                            period = int.parse(periodMatch.group(1)!);
+                          }
+
+                          String purpose = purposeController.text;
+                          if (purpose.isEmpty) purpose = "Personal";
+
+                          bool success = await provider.applyForLoan(
+                            context,
+                            period: period,
+                            purpose: purpose,
+                          );
+
                           if (success) {
                             if (context.mounted) {
-                              Navigator.pushReplacement(
+                              Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) => const LoanApproval(),
+                                  builder:
+                                      (_) => LoanApproval(
+                                        amount: amount,
+                                        period: period,
+                                        purpose: purpose,
+                                      ),
                                 ),
+                                (route) => false,
                               );
                             }
                           } else {
@@ -173,7 +207,8 @@ class _LoanApplicationPageState extends State<LoanApplicationPage> {
 Widget _inputField({
   required TextEditingController controller,
   required String hint,
-  TextInputType keyboardType = TextInputType.text,
+  required TextInputType keyboardType,
+  bool readOnly = false,
 }) {
   return Container(
     decoration: BoxDecoration(
@@ -186,124 +221,170 @@ Widget _inputField({
       controller: controller,
       keyboardType: keyboardType,
       decoration: InputDecoration(border: InputBorder.none, hintText: hint),
+      readOnly: readOnly,
     ),
   );
 }
 
 class LoanApproval extends StatelessWidget {
-  const LoanApproval({super.key});
+  final double amount;
+  final int period;
+  final String purpose;
+
+  const LoanApproval({
+    super.key,
+    required this.amount,
+    required this.period,
+    required this.purpose,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // loan details (replace with dynamic values if available)
-    const nextRepayment = '30/05/2025';
-    const interestRate = '5%';
-    const monthlyRepayment = '₦35,000';
-    const numberOfPayments = '6';
-    const purpose = 'To purchase goods for resale';
-    const totalPayment = '₦210,000';
+    // CALCULATIONS based on requirements:
+    // 1. Next repayment: 1 month from now.
+    // 2. Interest: 5% flat per month.
+    // 3. Monthly Repayment = (Amount / Period) + (Amount * 0.05)
+    // 4. Total Payment = Monthly Repayment * Period
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.r),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  height: 176.h,
-                  width: 168.w,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      colors: [
-                        const Color(0xff52D17C),
-                        const Color(0xff22918B),
-                      ],
+    final now = DateTime.now();
+    // Simple next month calculation
+    final nextRepaymentDate = DateTime(now.year, now.month + 1, now.day);
+    // Format date as DD/MM/YYYY
+    final nextRepaymentStr =
+        "${nextRepaymentDate.day.toString().padLeft(2, '0')}/${nextRepaymentDate.month.toString().padLeft(2, '0')}/${nextRepaymentDate.year}";
+
+    const interestRateStr = '5%'; // Fixed as per prompt
+
+    double monthlyInterest = amount * 0.05;
+    double monthlyPrincipal = amount / period;
+    double monthlyRepaymentVal = monthlyPrincipal + monthlyInterest;
+
+    String monthlyRepaymentStr = "₦${monthlyRepaymentVal.toStringAsFixed(0)}";
+
+    // Total Payment Logic from prompt:
+    // "Total payment should be calculated based on amount borrowed plus 5% on amount borrowed per month divided accross monthly repayment and period."
+    // This is slightly worded confusingly but mathematically consistent with:
+    // Total = Monthly Repayment * Period.
+    double totalPaymentVal = monthlyRepaymentVal * period;
+    String totalPaymentStr = "₦${totalPaymentVal.toStringAsFixed(0)}";
+
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didpop, result) {
+        if (didpop) {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/homepage',
+            (route) => false,
+          );
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.r),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 176.h,
+                    width: 168.w,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [
+                          const Color(0xff52D17C),
+                          const Color(0xff22918B),
+                        ],
+                      ),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Icons.check,
+                        color: Colors.white,
+                        size: 90.sp,
+                      ),
                     ),
                   ),
-                  child: Center(
-                    child: Icon(Icons.check, color: Colors.white, size: 90.sp),
-                  ),
-                ),
-                SizedBox(height: 30.h),
-                Text(
-                  'Congratulations!\nYour loan has been\napproved!',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Color(0xFF142B71),
-                    fontSize: 26.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 16.h),
-                Text(
-                  'Your loan has been sucessfully\ncredited into your account!',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Color(0xFF142B71), fontSize: 18.sp),
-                ),
-
-                SizedBox(height: 24.h),
-
-                // NEW: Loan summary card
-                Card(
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  elevation: 2,
-                  child: Padding(
-                    padding: EdgeInsets.all(16.r),
-                    child: Column(
-                      children: [
-                        _detailRow('Next Repayment Date', nextRepayment),
-                        Divider(),
-                        _detailRow('Interest Rate', interestRate),
-                        Divider(),
-                        _detailRow('Monthly Repayment', monthlyRepayment),
-                        Divider(),
-                        _detailRow('No. of Payments', numberOfPayments),
-                        Divider(),
-                        _detailRow('Purpose', purpose),
-                        Divider(),
-                        _detailRow(
-                          'Total Payment Amount',
-                          totalPayment,
-                          emphasize: true,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                SizedBox(height: 70.h),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      '/homepage',
-                      (route) => false,
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF142B71),
-                    minimumSize: Size(double.infinity, 50.sp),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                  ),
-                  child: Text(
-                    'Go back to Home',
+                  SizedBox(height: 30.h),
+                  Text(
+                    'Congratulations!\nYour loan has been\napproved!',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Color(0xFF142B71),
+                      fontSize: 26.sp,
                       fontWeight: FontWeight.bold,
-                      fontSize: 18.sp,
                     ),
                   ),
-                ),
-              ],
+                  SizedBox(height: 16.h),
+                  Text(
+                    'Your loan has been sucessfully\ncredited into your account!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Color(0xFF142B71), fontSize: 18.sp),
+                  ),
+
+                  SizedBox(height: 24.h),
+
+                  // NEW: Loan summary card
+                  Card(
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    elevation: 2,
+                    child: Padding(
+                      padding: EdgeInsets.all(16.r),
+                      child: Column(
+                        children: [
+                          _detailRow('Next Repayment Date', nextRepaymentStr),
+                          Divider(),
+                          _detailRow('Interest Rate', interestRateStr),
+                          Divider(),
+                          _detailRow('Monthly Repayment', monthlyRepaymentStr),
+                          Divider(),
+                          _detailRow('No. of Payments', period.toString()),
+                          Divider(),
+                          _detailRow('Purpose', purpose),
+                          Divider(),
+                          _detailRow(
+                            'Total Payment Amount',
+                            totalPaymentStr,
+                            emphasize: true,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: 70.h),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        '/homepage',
+                        (route) => false,
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF142B71),
+                      minimumSize: Size(double.infinity, 50.sp),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                    ),
+                    child: Text(
+                      'Go back to Home',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18.sp,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

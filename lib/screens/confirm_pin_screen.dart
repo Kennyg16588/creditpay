@@ -95,9 +95,10 @@ class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
         final successScreen = flowProvider.resolveSuccessScreen();
         flowProvider.clear();
 
-        Navigator.pushReplacement(
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (_) => successScreen),
+          (route) => false,
         );
       } else {
         setState(() {

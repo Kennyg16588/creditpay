@@ -15,10 +15,16 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final List<Map<String, dynamic>> _actions = [
     {
-      'icon': Icons.request_page,
-      'label': 'Loan\nRequest',
-      'tooltip': 'Loan\nRequest',
-      'route': '/loan',
+      'icon': Icons.phone,
+      'label': 'Airtime\n',
+      'tooltip': 'Airtime',
+      'route': '/airtime',
+    },
+    {
+      'icon': Icons.data_usage,
+      'label': 'Data\n',
+      'tooltip': 'Data\n',
+      'route': '/data',
     },
     {
       'icon': Icons.receipt_long,
@@ -26,12 +32,7 @@ class _HomeState extends State<Home> {
       'tooltip': 'Bills\n Payment',
       'route': '/bill_payment',
     },
-    {
-      'icon': Icons.money_off,
-      'label': 'Withdraw\n',
-      'tooltip': 'Withdraw\n',
-      'route': '/withdraw',
-    },
+
     {
       'icon': Icons.send,
       'label': 'Transfer\n',
@@ -213,7 +214,12 @@ class _HomeState extends State<Home> {
                                       borderRadius: BorderRadius.circular(10.r),
                                     ),
                                     child: TextButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        Navigator.pushNamed(
+                                          context,
+                                          '/loan_repay',
+                                        );
+                                      },
                                       child: Text(
                                         'Current Loan',
                                         style: Constants.kHomeTextstyle,

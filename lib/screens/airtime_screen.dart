@@ -242,7 +242,7 @@ class AirtimeScreen extends StatelessWidget {
             width: isSelected ? 3 : 1,
           ),
         ),
-        child: Image.asset(img, fit: BoxFit.cover),
+        child: Image.asset(img, fit: BoxFit.contain),
       ),
     );
   }

@@ -175,7 +175,7 @@ class _DataScreenState extends State<DataScreen> {
               assetPath,
               height: 60.h,
               width: 60.w,
-              fit: BoxFit.cover,
+              fit: BoxFit.contain,
             ),
           ),
           SizedBox(height: 6.h),

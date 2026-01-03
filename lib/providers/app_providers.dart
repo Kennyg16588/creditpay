@@ -1,6 +1,6 @@
 import 'package:creditpay/models/loan_repayment_model.dart';
+import 'package:creditpay/models/loan_model.dart';
 import 'package:creditpay/screens/success_screen.dart';
-import 'package:creditpay/services/loan_repayment_service.dart';
 import 'package:creditpay/services/cloudinary_service.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -350,15 +350,79 @@ class AuthProvider extends ChangeNotifier {
 }
 
 class LoanProvider extends ChangeNotifier {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   String selectedAmount = "";
   bool isLoading = false;
+  Loan? _activeLoan;
+
+  Loan? get activeLoan => _activeLoan;
+
+  // Initialize and fetch active loan
+  LoanProvider() {
+    _init();
+  }
+
+  void _init() {
+    _auth.authStateChanges().listen((user) {
+      if (user != null) {
+        fetchActiveLoan();
+      } else {
+        _activeLoan = null;
+        notifyListeners();
+      }
+    });
+  }
 
   void setSelectedAmount(String amount) {
     selectedAmount = amount;
     notifyListeners();
   }
 
-  Future<bool> applyForLoan(BuildContext context) async {
+  Future<void> fetchActiveLoan() async {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) return;
+
+    try {
+      final snapshot =
+          await _firestore
+              .collection('users')
+              .doc(uid)
+              .collection('loans')
+              //.where('userId', isEqualTo: uid) // Redundant in subcollection
+              .where('status', isEqualTo: 'active')
+              .limit(1)
+              .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        _activeLoan = Loan.fromFirestore(snapshot.docs.first);
+      } else {
+        _activeLoan = null;
+      }
+      notifyListeners();
+    } catch (e) {
+      debugPrint("❌ Error fetching active loan: $e");
+    }
+  }
+
+  Future<bool> applyForLoan(
+    BuildContext context, {
+    required String purpose,
+    required int period,
+  }) async {
+    if (_activeLoan != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'You already have an active loan. Please repay it first.',
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return false;
+    }
+
     isLoading = true;
     notifyListeners();
 
@@ -368,7 +432,48 @@ class LoanProvider extends ChangeNotifier {
           double.tryParse(selectedAmount.replaceAll(RegExp(r'[^0-9]'), "")) ??
           0.0;
 
-      if (amount <= 0) return false;
+      if (amount <= 0) {
+        isLoading = false;
+        notifyListeners();
+        return false;
+      }
+
+      final uid = _auth.currentUser?.uid;
+      if (uid == null) throw Exception("User not logged in");
+
+      // Calculate financials
+      // Interest: 5% per month on principal
+      // Monthly Repayment = (Amount / Period) + (Amount * 0.05)
+      double monthlyInterest = amount * 0.05;
+      double monthlyPrincipal = amount / period;
+      double monthlyRepayment = monthlyPrincipal + monthlyInterest;
+      double totalRepayment = monthlyRepayment * period;
+
+      // 1. Create Loan in Firestore
+      final loanData = {
+        'userId': uid,
+        'amount': amount, // Principal
+        'balance':
+            totalRepayment, // Initial balance is TOTAL repayment (Principal + Interest)
+        'totalRepayment': totalRepayment,
+        'monthlyRepayment': monthlyRepayment,
+        'period': period,
+        'purpose': purpose,
+        'createdAt': FieldValue.serverTimestamp(),
+        'dueDate': Timestamp.fromDate(
+          DateTime.now().add(const Duration(days: 30)),
+        ),
+        'status': 'active',
+      };
+
+      await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('loans')
+          .add(loanData);
+
+      // Refresh active loan immediately
+      await fetchActiveLoan();
 
       final walletProvider = Provider.of<WalletProvider>(
         context,
@@ -379,14 +484,14 @@ class LoanProvider extends ChangeNotifier {
         listen: false,
       );
 
-      // 1. Credit Wallet
+      // 2. Credit Wallet (Principal Amount)
       await walletProvider.creditWallet(
         amount,
         description: "Loan Disbursement",
         type: "credit",
       );
 
-      // 2. Add Notification
+      // 3. Add Notification
       notificationProvider.addNotification(
         title: 'Loan Approved',
         message:
@@ -399,6 +504,9 @@ class LoanProvider extends ChangeNotifier {
       return true;
     } catch (e) {
       debugPrint("❌ Error applying for loan: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+      );
       isLoading = false;
       notifyListeners();
       return false;
@@ -407,31 +515,36 @@ class LoanProvider extends ChangeNotifier {
 }
 
 class LoanRepaymentProvider with ChangeNotifier {
-  final LoanRepaymentService _service = LoanRepaymentService();
+  // We can access LoanProvider state via context in methods
 
   bool isPartPayment = true;
-  double enteredAmount = 35000;
-  String selectedBank = "Access Bank***0016";
+  double enteredAmount =
+      0; // Default to 0, will be updated by UI or full balance
+  String selectedBank = "Wallet Balance"; // Default to Wallet for now
   bool isLoading = false;
-
   double serviceFee = 0.0;
 
-  void togglePaymentType(bool part) {
+  void togglePaymentType(bool part, double fullBalance) {
     isPartPayment = part;
+    if (!part) {
+      enteredAmount = fullBalance;
+    }
     notifyListeners();
   }
 
   void updateAmount(String value) {
-    if (value.trim().isEmpty) return;
-
-    enteredAmount =
-        double.tryParse(value.replaceAll(RegExp(r'[^0-9]'), "")) ?? 0;
+    if (!isPartPayment) return; // Ignore updates if full payment selected
+    if (value.trim().isEmpty) {
+      enteredAmount = 0;
+    } else {
+      enteredAmount =
+          double.tryParse(value.replaceAll(RegExp(r'[^0-9]'), "")) ?? 0;
+    }
     notifyListeners();
   }
 
   LoanRepaymentModel get summary {
     double total = enteredAmount + serviceFee;
-
     return LoanRepaymentModel(
       amount: enteredAmount,
       serviceFee: serviceFee,
@@ -440,54 +553,97 @@ class LoanRepaymentProvider with ChangeNotifier {
   }
 
   Future<bool> submitRepayment(BuildContext context) async {
+    final loanProvider = Provider.of<LoanProvider>(context, listen: false);
+    final activeLoan = loanProvider.activeLoan;
+
+    if (activeLoan == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No active loan found to repay.')),
+      );
+      return false;
+    }
+
+    if (enteredAmount <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid amount.')),
+      );
+      return false;
+    }
+
+    if (enteredAmount > activeLoan.balance && isPartPayment) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Amount cannot exceed loan balance.')),
+      );
+      return false;
+    }
+
     isLoading = true;
     notifyListeners();
 
     try {
-      bool serviceSuccess = await _service.makeRepayment(
-        amount: enteredAmount,
-        repaymentType: isPartPayment ? "part" : "full",
-        bankAccount: selectedBank,
+      final walletProvider = Provider.of<WalletProvider>(
+        context,
+        listen: false,
       );
 
-      if (serviceSuccess) {
-        final walletProvider = Provider.of<WalletProvider>(
-          context,
-          listen: false,
-        );
-        final notificationProvider = Provider.of<NotificationProvider>(
-          context,
-          listen: false,
-        );
+      // 1. Debit Wallet
+      bool debitSuccess = await walletProvider.debitWallet(
+        enteredAmount,
+        description: "Loan Repayment",
+        type: "debit",
+      );
 
-        // 1. Debit Wallet
-        bool debitSuccess = await walletProvider.debitWallet(
-          enteredAmount,
-          description: "Loan Repayment",
-          type: "debit",
-        );
-
-        if (debitSuccess) {
-          // 2. Add Notification
-          notificationProvider.addNotification(
-            title: 'Repayment Successful',
-            message:
-                'Your loan repayment of ₦${enteredAmount.toStringAsFixed(0)} was successful.',
-            icon: Icons.check_circle,
-          );
-        }
-
+      if (!debitSuccess) {
         isLoading = false;
         notifyListeners();
-        return debitSuccess;
+        return false; // Debit failed (e.g. insufficient funds)
       }
+
+      // 2. Update Firestore
+      final newBalance = activeLoan.balance - enteredAmount;
+      final isPaidOff = newBalance <= 1; // Tolerance for float errors
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(activeLoan.userId)
+          .collection('loans')
+          .doc(activeLoan.id)
+          .update({
+            'balance': isPaidOff ? 0 : newBalance,
+            'status': isPaidOff ? 'paid' : 'active',
+            'lastRepaymentDate': FieldValue.serverTimestamp(),
+          });
+
+      // 3. Refresh Active Loan State
+      await loanProvider.fetchActiveLoan();
+
+      // 4. Notification
+      final notificationProvider = Provider.of<NotificationProvider>(
+        context,
+        listen: false,
+      );
+
+      notificationProvider.addNotification(
+        title: isPaidOff ? 'Loan Fully Repaid' : 'Repayment Successful',
+        message:
+            isPaidOff
+                ? 'Congratulations! You have fully repaid your loan of ₦${activeLoan.amount.toStringAsFixed(0)}.'
+                : 'Repayment of ₦${enteredAmount.toStringAsFixed(0)} received. Balance: ₦${newBalance.toStringAsFixed(0)}',
+        icon: Icons.check_circle,
+      );
+
+      isLoading = false;
+      notifyListeners();
+      return true;
     } catch (e) {
       debugPrint("❌ Error in repayment: $e");
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Repayment failed: $e')));
+      isLoading = false;
+      notifyListeners();
+      return false;
     }
-
-    isLoading = false;
-    notifyListeners();
-    return false;
   }
 }
 
