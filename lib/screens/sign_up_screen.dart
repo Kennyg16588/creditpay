@@ -1,6 +1,7 @@
 import 'package:creditpay/widgets/sign_up_form.dart';
 import 'package:flutter/material.dart';
 
+
 class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
 

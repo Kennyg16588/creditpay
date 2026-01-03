@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:creditpay/constants/constants.dart';
 
 class TierScreen extends StatefulWidget {
@@ -73,7 +74,7 @@ class _TierScreenState extends State<TierScreen> {
         body: 
           Column(crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 40),
+            SizedBox(height: 40.h),
             Padding(
               padding: const EdgeInsets.only(left: 20),
               child: Text('Upgrade Account',
@@ -82,11 +83,11 @@ class _TierScreenState extends State<TierScreen> {
             Padding(
               padding: const EdgeInsets.only(left: 20, top: 15),
               child: Text('Verify your account with the required documents to \nenjoy increased transactional limit and higher loan amounts',
-      style: TextStyle(fontSize: 18.0,
+      style: TextStyle(fontSize: 16.0.sp,
       color: Color(0xff142B71),
        ),),
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 30.h),
        Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -96,7 +97,7 @@ class _TierScreenState extends State<TierScreen> {
                 ],
               ),
 
-              const SizedBox(height: 40),
+              SizedBox(height: 40.h),
               // Animated container showing current tier
               Padding(
                 padding: const EdgeInsets.only(left:20, right: 20),
@@ -106,20 +107,20 @@ class _TierScreenState extends State<TierScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                   decoration: BoxDecoration(
                     color: currentColor,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(10.r),
                   ),
                   child: Text(
                     'Current tier: ${currentTier['title']}',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
-                      fontSize: 20,
+                      fontSize: 20.sp,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
               ),
-                const SizedBox(height: 80),
+                SizedBox(height: 40.h),
               // 🔹 PageView showing tier details
               Expanded(
                 child: PageView.builder(
@@ -132,12 +133,12 @@ class _TierScreenState extends State<TierScreen> {
                     final t = tiers[index];
                     return AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
-                      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         border: Border.all(color: currentColor),
                         color:  Colors.white,
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(16.r),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.05),
@@ -152,31 +153,31 @@ class _TierScreenState extends State<TierScreen> {
                         children: [
                           Text(
                             t['dlimit'] as String,
-                            style: const TextStyle(
-                              fontSize: 20,
+                            style:  TextStyle(
+                              fontSize: 20.sp,
                               fontWeight: FontWeight.w500,
                               color: Color(0xFF142B71),
                             ),
                           ),
-                          const SizedBox(height: 15),
+                          SizedBox(height: 15.h),
                           Text(
                             t['mlimit'] as String,
-                            style: const TextStyle(
-                              fontSize: 20,
+                            style:  TextStyle(
+                              fontSize: 20.sp,
                               fontWeight: FontWeight.w500,
                               color: Color(0xFF142B71),
                             ),
                           ),
-                          const SizedBox(height: 50),
+                          SizedBox(height: 50.h),
                           Text(
                             t['requirement'] as String,
-                            style: const TextStyle(
-                              fontSize: 20,
+                            style: TextStyle(
+                              fontSize: 20.sp,
                               fontWeight: FontWeight.w500,
                               color: Color(0xFF142B71),
                             ),
                           ),
-                          const SizedBox(height: 25),
+                          SizedBox(height: 25.h),
                           Center(
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
@@ -184,7 +185,7 @@ class _TierScreenState extends State<TierScreen> {
                                     ? Colors.green
                                     : const Color(0xFF142B71),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(8.r),
                                 ),
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 40,
@@ -200,9 +201,9 @@ class _TierScreenState extends State<TierScreen> {
                                 t['verified'] == true
                                     ? 'Verified'
                                     : 'Upgrade Now',
-                                style: const TextStyle(
+                                style:  TextStyle(
                                   color: Colors.white,
-                                  fontSize: 20,
+                                  fontSize: 20.sp,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -214,7 +215,7 @@ class _TierScreenState extends State<TierScreen> {
                   },
                 ),
               ),
-              const SizedBox(height: 400),
+              SizedBox(height: 80.h),
             ],
           ),
         ),
@@ -233,7 +234,7 @@ class _TierScreenState extends State<TierScreen> {
           color: isActive ? activeColor : inactiveColor,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(8.r),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         elevation: isActive ? 4 : 0,
@@ -249,6 +250,7 @@ class _TierScreenState extends State<TierScreen> {
   }
 }
           
+
 
 
 

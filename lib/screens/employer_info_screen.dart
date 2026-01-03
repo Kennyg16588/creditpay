@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:creditpay/constants/constants.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+import 'package:creditpay/providers/app_providers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EmployerInfoScreen extends StatefulWidget {
   const EmployerInfoScreen({super.key});
@@ -18,7 +22,27 @@ class _EmployerInfoScreenState extends State<EmployerInfoScreen> {
   final TextEditingController _companyAddress = TextEditingController();
   final TextEditingController _state = TextEditingController();
   final TextEditingController _country = TextEditingController();
- 
+
+  bool _loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentData();
+  }
+
+  Future<void> _loadCurrentData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _companyName.text = prefs.getString('emp_companyName') ?? '';
+      _jobTitle.text = prefs.getString('emp_jobTitle') ?? '';
+      _doe.text = prefs.getString('emp_doe') ?? '';
+      _monthlySalary.text = prefs.getString('emp_monthlySalary') ?? '';
+      _companyAddress.text = prefs.getString('emp_companyAddress') ?? '';
+      _state.text = prefs.getString('emp_state') ?? '';
+      _country.text = prefs.getString('emp_country') ?? '';
+    });
+  }
 
   @override
   void dispose() {
@@ -32,25 +56,44 @@ class _EmployerInfoScreenState extends State<EmployerInfoScreen> {
     super.dispose();
   }
 
-  void _saveChanges() {
+  Future<void> _saveChanges() async {
     if (_formKey.currentState?.validate() ?? false) {
-      // collect values or send to backend
-      // final data = {
-      //   'companyName': _companyName.text.trim(),
-      //   'jobTitle': _jobTitle.text.trim(),
-      //   'doe': _doe.text.trim(),
-      //   'monthlySalary': _monthlySalary.text.trim(),
-      //   'companyAddress': _companyAddress.text.trim(),
-      //   'state': _state.text.trim(),
-      //   'country': _country.text.trim(),
-      // };
+      setState(() => _loading = true);
 
-      // show confirmation
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Changes saved')),
-      );
+      final data = {
+        'emp_companyName': _companyName.text.trim(),
+        'emp_jobTitle': _jobTitle.text.trim(),
+        'emp_doe': _doe.text.trim(),
+        'emp_monthlySalary': _monthlySalary.text.trim(),
+        'emp_companyAddress': _companyAddress.text.trim(),
+        'emp_state': _state.text.trim(),
+        'emp_country': _country.text.trim(),
+      };
+
+      try {
+        final authProvider = Provider.of<AuthProvider>(context, listen: false);
+        await authProvider.updateUserData(data);
+
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Changes saved successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
         Navigator.pushNamed(context, '/upload_doc');
-      // TODO: persist `data` where needed
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } finally {
+        if (mounted) setState(() => _loading = false);
+      }
     }
   }
 
@@ -60,17 +103,17 @@ class _EmployerInfoScreenState extends State<EmployerInfoScreen> {
       hintText: hint,
       filled: true,
       fillColor: Colors.white,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      contentPadding: EdgeInsets.symmetric(horizontal: 12.r, vertical: 14.r),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(10.r),
         borderSide: BorderSide.none,
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(10.r),
         borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(10.r),
         borderSide: BorderSide.none,
       ),
     );
@@ -84,102 +127,121 @@ class _EmployerInfoScreenState extends State<EmployerInfoScreen> {
           backgroundColor: Colors.white,
           elevation: 0,
           foregroundColor: const Color(0xFF142B71),
+          title: Text(
+            'Employer Info',
+            style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+          ),
         ),
-        body: Column(crossAxisAlignment: CrossAxisAlignment.start,
-          children: [SizedBox(height: 40),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 20.h),
             Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: Text('Employer Info',
-              style: Constants.kSignupTextstyle,),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: Text('Please provide details of your current employment',
-              style: Constants.kHomeTextstyle,),
+              padding: EdgeInsets.symmetric(horizontal: 20.r),
+              child: Text(
+                'Please provide details of your current employment',
+                style: Constants.kHomeTextstyle,
+              ),
             ),
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 40, 20,40),
+                padding: EdgeInsets.fromLTRB(20.r, 20.r, 20.r, 40.r),
                 child: Form(
                   key: _formKey,
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Color(0xffA4BEFF),
-                      borderRadius: BorderRadius.circular(8),
+                      color: const Color(0xffA4BEFF),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
-                    padding: EdgeInsets.all(10),
+                    padding: EdgeInsets.all(10.r),
                     child: Column(
                       children: [
                         TextFormField(
                           controller: _companyName,
                           decoration: _fieldDecoration('Company\'s Name'),
                           textInputAction: TextInputAction.next,
-                          validator: (v) => (v == null || v.trim().isEmpty) ? 'Enter Company\'s name' : null,
+                          validator:
+                              (v) =>
+                                  (v == null || v.trim().isEmpty)
+                                      ? 'Enter Company\'s name'
+                                      : null,
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: 12.h),
                         TextFormField(
                           controller: _jobTitle,
                           decoration: _fieldDecoration('Job Title'),
                           textInputAction: TextInputAction.next,
-                          validator: (v) => (v == null || v.trim().isEmpty) ? 'Enter Job Title' : null,
+                          validator:
+                              (v) =>
+                                  (v == null || v.trim().isEmpty)
+                                      ? 'Enter Job Title'
+                                      : null,
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20.h),
                         TextFormField(
                           controller: _doe,
-                          decoration: _fieldDecoration('Date of Employment', hint: 'YYYY-MM-DD'),
+                          decoration: _fieldDecoration(
+                            'Date of Employment',
+                            hint: 'YYYY-MM-DD',
+                          ),
                           keyboardType: TextInputType.datetime,
                           textInputAction: TextInputAction.next,
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20.h),
                         TextFormField(
                           controller: _monthlySalary,
-                          decoration: _fieldDecoration('Monthly Salary', hint: 'e.g. Male / Female'),
+                          decoration: _fieldDecoration(
+                            'Monthly Salary',
+                            hint: 'e.g. 100000',
+                          ),
+                          keyboardType: TextInputType.number,
                           textInputAction: TextInputAction.next,
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20.h),
                         TextFormField(
                           controller: _companyAddress,
                           decoration: _fieldDecoration('Company\'s Address'),
                           textInputAction: TextInputAction.next,
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20.h),
                         TextFormField(
                           controller: _state,
                           decoration: _fieldDecoration('State'),
                           textInputAction: TextInputAction.next,
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20.h),
                         TextFormField(
                           controller: _country,
                           decoration: _fieldDecoration('Country'),
                           textInputAction: TextInputAction.next,
                         ),
-                        const SizedBox(height: 20),
-                        
+                        SizedBox(height: 20.h),
                       ],
                     ),
                   ),
                 ),
               ),
             ),
-            
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 20, 20, 80),
-                        child: Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: Color(0xff142B71),
-                            borderRadius: BorderRadius.circular(10),
-                            
+            Padding(
+              padding: EdgeInsets.fromLTRB(20.r, 20.r, 20.r, 40.r),
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: const Color(0xff142B71),
+                  borderRadius: BorderRadius.circular(10.r),
+                ),
+                child: TextButton(
+                  onPressed: _loading ? null : _saveChanges,
+                  child:
+                      _loading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : Text(
+                            'Save Changes',
+                            style: Constants.kloginTextstyle,
                           ),
-                        child: TextButton(
-                          onPressed: _saveChanges,
-                          child: const Text('Save Changes',
-                          style: Constants.kloginTextstyle,),
-                        ),
-                                            ),
-                      ),
-                  
+                ),
+              ),
+            ),
           ],
         ),
       ),

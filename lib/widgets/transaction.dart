@@ -1,113 +1,156 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:creditpay/constants/constants.dart';
+import 'package:creditpay/providers/app_providers.dart';
+import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Transaction extends StatelessWidget {
   const Transaction({super.key});
 
+  String _formatDate(dynamic date) {
+    if (date == null) return 'N/A';
+    DateTime dateTime;
+    if (date is Timestamp) {
+      dateTime = date.toDate();
+    } else if (date is String) {
+      dateTime = DateTime.tryParse(date) ?? DateTime.now();
+    } else {
+      return 'N/A';
+    }
+
+    final months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    return "${months[dateTime.month - 1]} ${dateTime.day}, ${dateTime.year}   ${dateTime.hour}:${dateTime.minute}";
+  }
+
   @override
   Widget build(BuildContext context) {
-    final recentTransactions = [
-      {
-        'title': 'Loan Payment',
-        'date': 'Oct 19, 2025',
-        'amount': '₦120.00',
-      },
-      {
-        'title': 'GOTV Subscription',
-        'date': 'Oct 18, 2025',
-        'amount': '₦45.50',
-      },
-      {
-        'title': 'Bills',
-        'date': 'Oct 17, 2025',
-        'amount': '₦260.00',
-      },
-      {
-        'title': 'Transfer',
-        'date': 'Oct 15, 2025',
-        'amount': '₦320.00',
-      },
-    ];
+    final transactionProvider = Provider.of<TransactionProvider>(context);
+    final recentTransactions = transactionProvider.transactions;
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
           leading: IconButton(
             onPressed: () => Navigator.pushNamed(context, '/homepage'),
-            icon: const Icon(Icons.arrow_back_ios_new, size: 18),
+            icon: Icon(Icons.arrow_back_ios_new, size: 18.sp),
           ),
-          backgroundColor: Colors.white, 
-          elevation: 0, 
+          backgroundColor: Colors.white,
+          elevation: 0,
           foregroundColor: const Color(0xFF142B71),
-          ),
-          body: Column(crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                  child: Row(
-                    children: [
-                      Text('Transaction History', style: Constants.kSignupTextstyle),
-                    ],
-                  ),
-                ),
-            const SizedBox(height: 40),
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                  child: Container(
-                    height: 45,
-                  width: 115,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Color(0xffE0E0E0)),
+              padding: EdgeInsets.symmetric(horizontal: 30.0.w),
+              child: Row(
+                children: [
+                  Text(
+                    'Transaction History',
+                    style: Constants.kSignupTextstyle,
                   ),
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text('All', style: Constants.kSignupTextstyle),
-                        ),
-                      IconButton(onPressed: (){}, icon: Icon(Icons.arrow_drop_down,
-                      size: 32,
-                      color: Color(0XFF142B71),),),
-                      ],
-                    ),),
+                ],
+              ),
+            ),
+            SizedBox(height: 40.h),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 30.0.w),
+              child: Container(
+                height: 45.h,
+                width: 115.w,
+                decoration: BoxDecoration(
+                  border: Border.all(color: const Color(0xffE0E0E0)),
                 ),
-             SizedBox(height: 20),
-            // -> Make only this area scrollable
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                child: ListView.builder(
-                  itemCount: recentTransactions.length,
-                  // separatorBuilder: (_, __) => const SizedBox(height: 0),
-                  itemBuilder: (context, index) {
-                    final tx = recentTransactions[index];
-                    return Container(
-                      decoration: BoxDecoration(
-                      color: Colors.white,
-                        border: Border(
-                          bottom: BorderSide(color: Color(0xffA4BEFF)),
-                        )
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text('All', style: Constants.kSignupTextstyle),
+                    ),
+                    IconButton(
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.arrow_drop_down,
+                        size: 32.sp,
+                        color: const Color(0XFF142B71),
                       ),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                        title: Text(
-                          tx['title'] as String,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Text(tx['date'] as String),
-                        trailing: Text(
-                          tx['amount'] as String,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        onTap: () {},
-                      ),
-                    );
-                  },
+                    ),
+                  ],
                 ),
               ),
             ),
-            ],
-          ),),
-        );
+            SizedBox(height: 20.h),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30.0.w),
+                child:
+                    recentTransactions.isEmpty
+                        ? const Center(child: Text("No transactions found"))
+                        : ListView.builder(
+                          itemCount: recentTransactions.length,
+                          itemBuilder: (context, index) {
+                            final tx = recentTransactions[index];
+                            final amount = tx['amount'] ?? 0.0;
+                            final type = tx['type'] ?? 'debit';
+                            final color =
+                                type == 'credit' ? Colors.green : Colors.red;
+                            final prefix = type == 'credit' ? '+' : '-';
+
+                            return Container(
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                border: Border(
+                                  bottom: BorderSide(color: Color(0xffA4BEFF)),
+                                ),
+                              ),
+                              child: ListTile(
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 12.w,
+                                ),
+                                title: Text(
+                                  tx['account_name'] ??
+                                      tx['description'] ??
+                                      tx['title'] ??
+                                      'Transaction',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                subtitle: Text(_formatDate(tx['date'])),
+                                trailing: Text(
+                                  "$prefix₦${amount.toStringAsFixed(2)}",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: color,
+                                  ),
+                                ),
+                                onTap: () {},
+                              ),
+                            );
+                          },
+                        ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

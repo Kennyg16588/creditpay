@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:creditpay/constants/constants.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 
 class LoanPersonalInfo extends StatefulWidget {
@@ -28,105 +29,105 @@ class _LoanPersonalInfoState extends State<LoanPersonalInfo> {
           icon: const Icon(Icons.arrow_back, color: Color(0xFF142B71)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title:  Text(
           "Personal Information",
           style: Constants.kHomeTextstyle,
         ),
       ),
 
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding:EdgeInsets.symmetric(horizontal: 20.r),
         child: ListView(
           children: [
-            const Text(
+             Text(
               "kindly select the necessary details",
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 14.sp,
                 color: Color(0xFF142B71),
               ),
             ),
-            const SizedBox(height: 25),
+             SizedBox(height: 25.h),
 
             // FULL NAME
-            const Text(
+             Text(
               "Full Name",
               style: Constants.kHomeTextstyle,
             ),
-            const SizedBox(height: 5),
+             SizedBox(height: 5.h),
             _inputField(controller: nameController, hint: "Please enter your name"),
 
-            const SizedBox(height: 20),
+             SizedBox(height: 20.h),
 
             // EMPLOYMENT STATUS
-            const Text(
+             Text(
               "Employment Status",
               style: Constants.kHomeTextstyle,
             ),
-            const SizedBox(height: 5),
+             SizedBox(height: 5.h),
             _dropdownField(
               value: employmentStatus,
               items: ["Employed", "Unemployed", "Self-employed"],
               onChanged: (v) => setState(() => employmentStatus = v),
             ),
 
-            const SizedBox(height: 20),
+             SizedBox(height: 20.h),
 
             // INCOME
-            const Text(
+             Text(
               "Income",
               style: Constants.kHomeTextstyle,
             ),
-            const SizedBox(height: 5),
+            SizedBox(height: 5.h),
             _dropdownField(
               value: incomeRange,
               items: ["Below ₦50000", "₦50000 - ₦200,000", "Above ₦200,000"],
               onChanged: (v) => setState(() => incomeRange = v),
             ),
 
-            const SizedBox(height: 20),
+             SizedBox(height: 20.h),
 
             // AGE
-            const Text(
+             Text(
               "Age",
               style: Constants.kHomeTextstyle,
             ),
-            const SizedBox(height: 5),
+             SizedBox(height: 5.h),
             _inputField(controller: ageController, hint: "", keyboardType: TextInputType.number),
 
-            const SizedBox(height: 20),
+             SizedBox(height: 20.h),
 
             // HOME ADDRESS
-            const Text(
+             Text(
               "Home Address",
               style: Constants.kHomeTextstyle,
             ),
-            const SizedBox(height: 5),
+             SizedBox(height: 5.h),
             _inputField(controller: addressController, hint: ""),
 
-            const SizedBox(height: 240),
+             SizedBox(height: 200.h),
 
             // NEXT BUTTON
             SizedBox(
               width: double.infinity,
-              height: 55,
+              height: 55.h,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF0D2D6C),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
                 onPressed: () {
                   Navigator.pushNamed(context, '/loan_bverify');
                 },
-                child: const Text(
+                child:  Text(
                   "Next",
                   style: Constants.kloginTextstyle,
                 ),
               ),
             ),
 
-            const SizedBox(height: 25),
+             SizedBox(height: 25.h),
           ],
         ),
       ),
@@ -141,10 +142,10 @@ class _LoanPersonalInfoState extends State<LoanPersonalInfo> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFF142B71), width: 2),
-        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF142B71), width: 2.w),
+        borderRadius: BorderRadius.circular(12.r),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 15),
+      padding:  EdgeInsets.symmetric(horizontal: 15.r),
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,
@@ -164,10 +165,10 @@ class _LoanPersonalInfoState extends State<LoanPersonalInfo> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFF142B71), width: 2),
-        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF142B71), width: 2.w),
+        borderRadius: BorderRadius.circular(12.r),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 15),
+      padding:  EdgeInsets.symmetric(horizontal: 15.r),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           dropdownColor:Colors.white,

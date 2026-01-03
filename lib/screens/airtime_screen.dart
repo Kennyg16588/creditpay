@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:creditpay/providers/app_providers.dart';
 import 'package:creditpay/screens/confirm_pin_screen.dart';
+import 'package:creditpay/constants/constants.dart';
 
 class AirtimeScreen extends StatelessWidget {
   AirtimeScreen({super.key});
@@ -10,7 +12,6 @@ class AirtimeScreen extends StatelessWidget {
   final TextEditingController phoneController = TextEditingController();
 
   final List<int> quickAmounts = [200, 1000, 2000];
-  final double balance = 21020.00;
 
   @override
   Widget build(BuildContext context) {
@@ -22,84 +23,98 @@ class AirtimeScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF142B71)),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: const Color(0xFF142B71),
+            size: 24.sp,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
-
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: EdgeInsets.symmetric(horizontal: 24.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-             Text(
-          "Airtime",
-          style: TextStyle(
-            color: Color(0xFF142B71),
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 15),
+            Text("Airtime", style: Constants.kSignupTextstyle),
+            SizedBox(height: 15.h),
+
             /// TOP BIG PROVIDER ICONS
             Row(
               children: [
                 _bigProvider(context, provider, "MTN", "images/mtn.png"),
-                const SizedBox(width: 15),
+                SizedBox(width: 15.w),
                 _bigProvider(context, provider, "Airtel", "images/airtel.png"),
               ],
             ),
 
-            const SizedBox(height: 25),
-            const Text("Choose an amount",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-            const SizedBox(height: 15),
+            SizedBox(height: 25.h),
+            Text(
+              "Choose an amount",
+              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+            ),
+            SizedBox(height: 15.h),
 
             Row(
-              children: quickAmounts.map((amount) {
-                return Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      amountController.text = amount.toString();
-                      provider.setAmount(amount);
-                    },
-                    child: Container(
-                       margin: const EdgeInsets.symmetric(horizontal: 10),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xFF142B71)),
-                      ),
-                      child: Center(
-                        child: Text(
-                          "₦$amount",
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF142B71)),
+              children:
+                  quickAmounts.map((amount) {
+                    return Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          amountController.text = amount.toString();
+                          provider.setAmount(amount);
+                        },
+                        child: Container(
+                          margin: EdgeInsets.symmetric(horizontal: 10.w),
+                          padding: EdgeInsets.symmetric(vertical: 12.h),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.r),
+                            border: Border.all(color: const Color(0xFF142B71)),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "₦$amount",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14.sp,
+                                color: const Color(0xFF142B71),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                );
-              }).toList(),
+                    );
+                  }).toList(),
             ),
 
-            const SizedBox(height: 25),
+            SizedBox(height: 25.h),
             Row(
               children: [
-                const Text("Amount",
-                    style: TextStyle(fontWeight: FontWeight.w600)),
-                const Spacer(),
                 Text(
-                  "Balance: ₦${balance.toStringAsFixed(2)}",
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF142B71)),
+                  "Amount",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14.sp,
+                  ),
+                ),
+                const Spacer(),
+                Consumer<WalletProvider>(
+                  builder: (context, walletProvider, _) {
+                    final balance = walletProvider.balance;
+                    return Text(
+                      "Balance: ₦${balance.toStringAsFixed(2)}",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14.sp,
+                        color: const Color(0xFF142B71),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
 
-            const SizedBox(height: 10),
+            SizedBox(height: 10.h),
             TextField(
               controller: amountController,
               keyboardType: TextInputType.number,
@@ -109,10 +124,12 @@ class AirtimeScreen extends StatelessWidget {
               decoration: _inputDecoration("Enter amount"),
             ),
 
-            const SizedBox(height: 25),
-            const Text("Choose Network",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-            const SizedBox(height: 10),
+            SizedBox(height: 25.h),
+            Text(
+              "Choose Network",
+              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+            ),
+            SizedBox(height: 10.h),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -120,14 +137,21 @@ class AirtimeScreen extends StatelessWidget {
                 _smallNetwork(context, provider, "MTN", "images/mtn.png"),
                 _smallNetwork(context, provider, "Airtel", "images/airtel.png"),
                 _smallNetwork(context, provider, "Glo", "images/glo.png"),
-                _smallNetwork(context, provider, "Etisalat", "images/etisalat.png"),
+                _smallNetwork(
+                  context,
+                  provider,
+                  "Etisalat",
+                  "images/etisalat.png",
+                ),
               ],
             ),
 
-            const SizedBox(height: 25),
-            const Text("Phone Number",
-                style: TextStyle(fontWeight: FontWeight.w600)),
-            const SizedBox(height: 10),
+            SizedBox(height: 25.h),
+            Text(
+              "Phone Number",
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14.sp),
+            ),
+            SizedBox(height: 10.h),
 
             TextField(
               controller: phoneController,
@@ -136,34 +160,53 @@ class AirtimeScreen extends StatelessWidget {
               decoration: _inputDecoration("Enter phone number"),
             ),
 
-            const SizedBox(height: 35),
+            SizedBox(height: 35.h),
 
             /// PROCEED BUTTON
             SizedBox(
               width: double.infinity,
-              height: 55,
+              height: 55.h,
               child: ElevatedButton(
-                onPressed: provider.isValid
-                    ? () {Provider.of<TransactionFlowProvider>(context, listen: false)
-    .setPendingAction(TransactionType.billPayment, payload:{});
+                onPressed:
+                    provider.isValid
+                        ? () {
+                          final amount = amountController.text.trim();
+                          final phone = phoneController.text.trim();
+                          final network =
+                              provider.selectedNetwork ??
+                              provider.selectedProvider ??
+                              "Network";
 
-Navigator.push(
-  context,
-  MaterialPageRoute(builder: (_) =>  ConfirmPinScreen()),
-);
-} 
-                    : null,
+                          Provider.of<TransactionFlowProvider>(
+                            context,
+                            listen: false,
+                          ).setPendingAction(
+                            TransactionType.airtimePurchase,
+                            payload: {
+                              'amount': amount,
+                              'description': "Airtime $network ($phone)",
+                            },
+                          );
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ConfirmPinScreen(),
+                            ),
+                          );
+                        }
+                        : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF142B71),
                   disabledBackgroundColor: Colors.grey.shade400,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   "Proceed",
                   style: TextStyle(
-                    fontSize: 17,
+                    fontSize: 17.sp,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
                   ),
@@ -171,22 +214,27 @@ Navigator.push(
               ),
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
           ],
         ),
       ),
     );
   }
 
-  Widget _bigProvider(context, AirtimeProvider provider, String name, String img) {
+  Widget _bigProvider(
+    BuildContext context,
+    AirtimeProvider provider,
+    String name,
+    String img,
+  ) {
     final isSelected = provider.selectedProvider == name;
 
     return GestureDetector(
       onTap: () => provider.setProvider(name),
       child: Container(
-        width: 75,
-        height: 75,
-        padding: const EdgeInsets.all(10),
+        width: 75.w,
+        height: 75.h,
+        padding: EdgeInsets.all(10.w),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
@@ -194,28 +242,32 @@ Navigator.push(
             width: isSelected ? 3 : 1,
           ),
         ),
-        child: Image.asset(img, fit: BoxFit.cover,),
+        child: Image.asset(img, fit: BoxFit.cover),
       ),
     );
   }
 
-  Widget _smallNetwork(context, AirtimeProvider provider, String name, String img) {
+  Widget _smallNetwork(
+    BuildContext context,
+    AirtimeProvider provider,
+    String name,
+    String img,
+  ) {
     final isSelected = provider.selectedNetwork == name;
 
     return GestureDetector(
       onTap: () => provider.setNetwork(name),
       child: Container(
-        width: 60,
-        height: 55,
-        // padding: const EdgeInsets.all(6),
+        width: 60.w,
+        height: 55.h,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(10.r),
           border: Border.all(
             color: isSelected ? const Color(0xFF142B71) : Colors.grey.shade400,
             width: isSelected ? 2 : 1,
           ),
         ),
-        child: Image.asset(img,fit: BoxFit.contain,),
+        child: Image.asset(img, fit: BoxFit.contain),
       ),
     );
   }
@@ -223,15 +275,14 @@ Navigator.push(
   InputDecoration _inputDecoration(String hint) {
     return InputDecoration(
       hintText: hint,
-      // filled: true,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+      contentPadding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 15.h),
       enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Color(0xFF142B71)),
-        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Color(0xFF142B71)),
+        borderRadius: BorderRadius.circular(8.r),
       ),
-      focusedBorder:  OutlineInputBorder(
-        borderSide: BorderSide(color: Color(0xFF142B71)),
-        borderRadius: BorderRadius.circular(8),
+      focusedBorder: OutlineInputBorder(
+        borderSide: const BorderSide(color: Color(0xFF142B71)),
+        borderRadius: BorderRadius.circular(8.r),
       ),
     );
   }

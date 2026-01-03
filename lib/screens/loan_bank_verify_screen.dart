@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:creditpay/constants/constants.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 
 class LoanBankVerify extends StatefulWidget {
@@ -27,82 +28,82 @@ class _LoanBankVerifyState extends State<LoanBankVerify> {
           icon: const Icon(Icons.arrow_back, color: Color(0xFF142B71)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title:  Text(
           "Bank Verification",
           style: Constants.kHomeTextstyle,
         ),
       ),
 
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding:  EdgeInsets.symmetric(horizontal: 20.r),
         child: ListView(
           children: [
-            const Text(
+             Text(
               "kindly input your bank information",
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 14.sp,
                 color: Color(0xFF142B71),
               ),
             ),
-            const SizedBox(height: 25),
+             SizedBox(height: 25.h),
 
             // BVN
-            const Text(
+             Text(
               "BVN",
               style: Constants.kHomeTextstyle,
             ),
-            const SizedBox(height: 5),
+             SizedBox(height: 5.h),
             _inputField(controller: nameController, hint: ""),
 
-            const SizedBox(height: 20),
+             SizedBox(height: 20.h),
 
             // ACCOUNT NUMBER
-            const Text(
+             Text(
               "Account Number",
               style: Constants.kHomeTextstyle,
             ),
-            const SizedBox(height: 5),
+             SizedBox(height: 5.h),
             _inputField(controller: addressController, hint: ""),
             
 
-            const SizedBox(height: 20),
+             SizedBox(height: 20.h),
 
             // BANK
-            const Text(
+             Text(
               "Bank",
               style: Constants.kHomeTextstyle,
             ),
-            const SizedBox(height: 5),
+             SizedBox(height: 5.h),
             _dropdownField(
               value: bank,
               items: ["GTB", "Access", "Palmpay"],
               onChanged: (v) => setState(() => bank = v),
             ),
 
-            const SizedBox(height: 240),
+             SizedBox(height: 240.h),
 
             // NEXT BUTTON
             SizedBox(
               width: double.infinity,
-              height: 55,
+              height: 55.h,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF0D2D6C),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
                 onPressed: () {
                   Navigator.pushNamed(context, '/loan_application');
                 },
-                child: const Text(
+                child:  Text(
                   "Next",
                   style: Constants.kloginTextstyle,
                 ),
               ),
             ),
 
-            const SizedBox(height: 25),
+            SizedBox(height: 25.h),
           ],
         ),
       ),
@@ -117,10 +118,10 @@ class _LoanBankVerifyState extends State<LoanBankVerify> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFF142B71), width: 2),
+        border: Border.all(color: const Color(0xFF142B71), width: 2.w),
         borderRadius: BorderRadius.circular(12),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 15),
+      padding: EdgeInsets.symmetric(horizontal: 15.r),
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,
@@ -140,10 +141,10 @@ class _LoanBankVerifyState extends State<LoanBankVerify> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFF142B71), width: 2),
+        border: Border.all(color: const Color(0xFF142B71), width: 2.w),
         borderRadius: BorderRadius.circular(12),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 15),
+      padding:  EdgeInsets.symmetric(horizontal: 15.r),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           dropdownColor:Colors.white,

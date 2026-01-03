@@ -11,3 +11,4 @@ class LoanRepaymentModel {
     required this.total,
   });
 }
+

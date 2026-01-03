@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:creditpay/providers/app_providers.dart';
 import 'package:creditpay/constants/constants.dart';
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LoanApplicationPage extends StatefulWidget {
   const LoanApplicationPage({super.key});
@@ -15,7 +15,9 @@ class _LoanApplicationPageState extends State<LoanApplicationPage> {
   final purposeController = TextEditingController();
   final periodController = TextEditingController(text: "6 months");
   final interestController = TextEditingController(text: "5%");
-  final installmentController = TextEditingController(text: "₦35,000 Per month");
+  final installmentController = TextEditingController(
+    text: "₦35,000 Per month",
+  );
 
   bool agreeToTerms = false;
 
@@ -32,66 +34,58 @@ class _LoanApplicationPageState extends State<LoanApplicationPage> {
           icon: const Icon(Icons.arrow_back, color: Color(0xFF142B71)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          "Loan Application",
-          style: Constants.kHomeTextstyle,
-        ),
+        title: Text("Loan Application", style: Constants.kHomeTextstyle),
       ),
 
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 20.r, vertical: 10.r),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             // AMOUNT FIELD (READ-ONLY)
-            Text("Amount",
-            style: Constants.kHomeTextstyle),
-            const SizedBox(height: 5),
-            Container(decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFF142B71), width: 2),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 15),
+            Text("Amount", style: Constants.kHomeTextstyle),
+            SizedBox(height: 5.h),
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: const Color(0xFF142B71), width: 2.w),
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 15.h),
               child: TextField(
                 style: Constants.kloanTextstyle,
                 readOnly: true,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: selectedAmount.isEmpty ? "Select amount" : selectedAmount,
-                      ),
-                    ),
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText:
+                      selectedAmount.isEmpty ? "Select amount" : selectedAmount,
+                ),
+              ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
 
             // PURPOSE
-            
-            Text("Purpose",
-            style: Constants.kHomeTextstyle),
-            const SizedBox(height: 5),
+            Text("Purpose", style: Constants.kHomeTextstyle),
+            SizedBox(height: 5.h),
             _inputField(controller: purposeController, hint: "Reason for loan"),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
 
             // PERIOD
-            Text("Period",
-            style: Constants.kHomeTextstyle),
-            const SizedBox(height: 5),
-             _inputField(controller: periodController, hint: ""),
-            const SizedBox(height: 20),
+            Text("Period", style: Constants.kHomeTextstyle),
+            SizedBox(height: 5.h),
+            _inputField(controller: periodController, hint: ""),
+            SizedBox(height: 20.h),
 
             // INTEREST
-            Text("Interest",
-            style:Constants.kHomeTextstyle),
-            const SizedBox(height: 5),
-             _inputField(controller: interestController, hint: ""),
-            const SizedBox(height: 20),
+            Text("Interest", style: Constants.kHomeTextstyle),
+            SizedBox(height: 5.h),
+            _inputField(controller: interestController, hint: ""),
+            SizedBox(height: 20.h),
 
             // INSTALLMENT
-            Text("Installment",
-            style: Constants.kHomeTextstyle),
-            const SizedBox(height: 5),
-             _inputField(controller: installmentController, hint: ""),
-            const SizedBox(height: 20),
+            Text("Installment", style: Constants.kHomeTextstyle),
+            SizedBox(height: 5.h),
+            _inputField(controller: installmentController, hint: ""),
+            SizedBox(height: 20.h),
 
             // TERMS CHECKBOX
             Row(
@@ -105,43 +99,70 @@ class _LoanApplicationPageState extends State<LoanApplicationPage> {
                 const Text("Accept our Terms and Conditions"),
               ],
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
 
             // CONFIRM BUTTON
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: agreeToTerms ? () {
-                   Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoanApproval()),
-      );
-                } : null,
+                onPressed:
+                    (agreeToTerms && !context.watch<LoanProvider>().isLoading)
+                        ? () async {
+                          bool success = await context
+                              .read<LoanProvider>()
+                              .applyForLoan(context);
+                          if (success) {
+                            if (context.mounted) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const LoanApproval(),
+                                ),
+                              );
+                            }
+                          } else {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Loan Application Failed"),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          }
+                        }
+                        : null,
                 style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  backgroundColor: Color(0xFF142B71),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  backgroundColor: const Color(0xFF142B71),
+                  padding: EdgeInsets.symmetric(vertical: 14.r),
                 ),
-                child: const Text("Confirm",
-                style: Constants.kloginTextstyle,
-              ),),
+                child:
+                    context.watch<LoanProvider>().isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : Text("Confirm", style: Constants.kloginTextstyle),
+              ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
 
             // CANCEL BUTTON
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () => Navigator.popAndPushNamed(context, '/homepage'),
+                onPressed:
+                    () => Navigator.popAndPushNamed(context, '/homepage'),
                 style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
                   backgroundColor: Color(0xFFA4BEFF),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: EdgeInsets.symmetric(vertical: 14.r),
                 ),
-                child: const Text("Cancel",
-                style: Constants.kloginTextstyle,
+                child: Text("Cancel", style: Constants.kloginTextstyle),
               ),
-            ),),
+            ),
           ],
         ),
       ),
@@ -150,30 +171,26 @@ class _LoanApplicationPageState extends State<LoanApplicationPage> {
 }
 
 Widget _inputField({
-    required TextEditingController controller,
-    required String hint,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFF142B71), width: 2),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 15),
-      child: TextField(
-        style: Constants.kloanTextstyle,
-        controller: controller,
-        keyboardType: keyboardType,
-        decoration: InputDecoration(
-          border: InputBorder.none,
-          hintText: hint,
-        ),
-      ),
-    );
-  }
+  required TextEditingController controller,
+  required String hint,
+  TextInputType keyboardType = TextInputType.text,
+}) {
+  return Container(
+    decoration: BoxDecoration(
+      border: Border.all(color: const Color(0xFF142B71), width: 2.w),
+      borderRadius: BorderRadius.circular(12.r),
+    ),
+    padding: EdgeInsets.symmetric(horizontal: 15.r),
+    child: TextField(
+      style: Constants.kloanTextstyle,
+      controller: controller,
+      keyboardType: keyboardType,
+      decoration: InputDecoration(border: InputBorder.none, hintText: hint),
+    ),
+  );
+}
 
-
-  class LoanApproval extends StatelessWidget {
+class LoanApproval extends StatelessWidget {
   const LoanApproval({super.key});
 
   @override
@@ -191,90 +208,98 @@ Widget _inputField({
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            padding: EdgeInsets.symmetric(horizontal: 24.r),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  height: 176,
-                  width: 168,
+                  height: 176.h,
+                  width: 168.w,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    gradient: LinearGradient(colors: [
-                      const Color(0xff52D17C),
-                      const Color(0xff22918B),
-                    ]),
+                    gradient: LinearGradient(
+                      colors: [
+                        const Color(0xff52D17C),
+                        const Color(0xff22918B),
+                      ],
+                    ),
                   ),
-                  child: const Center(
-                    child: Icon(Icons.check, color: Colors.white, size: 90),
+                  child: Center(
+                    child: Icon(Icons.check, color: Colors.white, size: 90.sp),
                   ),
                 ),
-                const SizedBox(height: 30),
-                const Text(
+                SizedBox(height: 30.h),
+                Text(
                   'Congratulations!\nYour loan has been\napproved!',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Color(0xFF142B71),
-                    fontSize: 26,
+                    fontSize: 26.sp,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 16),
-                const Text(
+                SizedBox(height: 16.h),
+                Text(
                   'Your loan has been sucessfully\ncredited into your account!',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Color(0xFF142B71),
-                    fontSize: 18,
-                  ),
+                  style: TextStyle(color: Color(0xFF142B71), fontSize: 18.sp),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24.h),
 
                 // NEW: Loan summary card
-                Card(color: Colors.white,
+                Card(
+                  color: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                   elevation: 2,
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: EdgeInsets.all(16.r),
                     child: Column(
                       children: [
                         _detailRow('Next Repayment Date', nextRepayment),
-                        const Divider(),
+                        Divider(),
                         _detailRow('Interest Rate', interestRate),
-                        const Divider(),
+                        Divider(),
                         _detailRow('Monthly Repayment', monthlyRepayment),
-                        const Divider(),
+                        Divider(),
                         _detailRow('No. of Payments', numberOfPayments),
-                        const Divider(),
+                        Divider(),
                         _detailRow('Purpose', purpose),
-                        const Divider(),
-                        _detailRow('Total Payment Amount', totalPayment, emphasize: true),
+                        Divider(),
+                        _detailRow(
+                          'Total Payment Amount',
+                          totalPayment,
+                          emphasize: true,
+                        ),
                       ],
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 70),
+                SizedBox(height: 70.h),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/homepage');
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/homepage',
+                      (route) => false,
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF142B71),
-                    minimumSize: const Size(double.infinity, 50),
+                    minimumSize: Size(double.infinity, 50.sp),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Go back to Home',
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                      fontSize: 18.sp,
                     ),
                   ),
                 ),
@@ -288,24 +313,21 @@ Widget _inputField({
 
   Widget _detailRow(String label, String value, {bool emphasize = false}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      padding: EdgeInsets.symmetric(vertical: 6.r),
       child: Row(
         children: [
           Expanded(
             child: Text(
               label,
-              style: const TextStyle(
-                color: Color(0xFF142B71),
-                fontSize: 14,
-              ),
+              style: TextStyle(color: Color(0xFF142B71), fontSize: 14.sp),
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8.w),
           Text(
             value,
             style: TextStyle(
               color: Color(0xFF142B71),
-              fontSize: emphasize ? 16 : 14,
+              fontSize: emphasize ? 16.sp : 14.sp,
               fontWeight: emphasize ? FontWeight.bold : FontWeight.w600,
             ),
           ),

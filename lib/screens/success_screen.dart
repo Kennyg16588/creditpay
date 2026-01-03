@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 // Transfer success (existing)
 class TransferSuccessScreen extends StatelessWidget {
@@ -109,75 +109,79 @@ Widget _baseSuccessScaffold(
     body: SafeArea(
       child: Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          padding: EdgeInsets.symmetric(horizontal: 24.0.w),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                height: 176,
-                width: 168,
+                height: 176.h,
+                width: 168.w,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: const LinearGradient(colors: [
-                    Color(0xff52D17C),
-                    Color(0xff22918B),
-                  ]),
+                  gradient: const LinearGradient(
+                    colors: [Color(0xff52D17C), Color(0xff22918B)],
+                  ),
                 ),
-                child: const Center(
-                  child: Icon(Icons.check, color: Colors.white, size: 90),
+                child: Center(
+                  child: Icon(Icons.check, color: Colors.white, size: 90.sp),
                 ),
               ),
-              const SizedBox(height: 30),
+              SizedBox(height: 30.h.h),
               Text(
                 title,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
-                  fontSize: 26,
+                  fontSize: 26.sp,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h.h),
               Text(
                 message,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white70, fontSize: 15),
+                style: TextStyle(color: Colors.white70, fontSize: 15.sp),
               ),
-              const SizedBox(height: 50),
+              SizedBox(height: 50.h.h),
               ElevatedButton(
                 onPressed: onPrimary,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFFD602),
                   minimumSize: const Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
                 child: Text(
                   primaryButtonLabel,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Color(0xFF142B71),
                     fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                    fontSize: 16.sp,
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h.h),
               ElevatedButton(
-                onPressed: () => Navigator.pushNamed(context, '/homepage'),
+                onPressed:
+                    () => Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/homepage',
+                      (route) => false,
+                    ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFFD602),
                   minimumSize: const Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   'Continue',
                   style: TextStyle(
                     color: Color(0xFF142B71),
                     fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                    fontSize: 16.sp,
                   ),
                 ),
               ),

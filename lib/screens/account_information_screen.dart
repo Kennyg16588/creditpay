@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:creditpay/constants/constants.dart';
 
 class AccountInformationScreen extends StatelessWidget {
@@ -10,25 +11,21 @@ class AccountInformationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = [
       {
-        // 'icon': Icons.person,
         'title': 'Personal Information',
         'subtitle': 'Name, DOB, Address',
         'route': '/personal_info',
       },
       {
-        // 'icon': Icons.group,
         'title': 'Next of Kin Information',
         'subtitle': 'Contact & relation',
         'route': '/next_of_kin',
       },
       {
-        // 'icon': Icons.work,
         'title': 'Employment Information',
         'subtitle': 'Employer details',
         'route': '/employment_info',
       },
       {
-        // 'icon': Icons.upload_file,
         'title': 'Upload Documents',
         'subtitle': 'ID, Payslip, KYC',
         'route': '/upload_doc',
@@ -40,38 +37,40 @@ class AccountInformationScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         appBar: AppBar(
           leading: IconButton(
-            onPressed: (){
+            onPressed: () {
               Navigator.pushNamed(context, '/profile');
             },
-            icon: const Icon(Icons.arrow_back),
+            icon: Icon(Icons.arrow_back, size: 24.sp),
           ),
           backgroundColor: Colors.white,
           elevation: 0,
           foregroundColor: const Color(0xFF142B71),
         ),
-        body: 
-          Column(crossAxisAlignment: CrossAxisAlignment.start,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 40),
+            SizedBox(height: 40.h),
             Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: Text('Account Information',
-              style: Constants.kSignupTextstyle,),
+              padding: EdgeInsets.only(left: 20.w),
+              child: Text(
+                'Account Information',
+                style: Constants.kSignupTextstyle,
+              ),
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: EdgeInsets.all(20.w),
                 child: ListView.separated(
                   itemCount: items.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 20),
+                  separatorBuilder: (_, __) => SizedBox(height: 20.h),
                   itemBuilder: (context, index) {
                     final it = items[index];
                     return _InfoCard(
-                      // icon: it['icon'] as IconData,
                       title: it['title'] as String,
                       subtitle: it['subtitle'] as String,
                       color: Colors.white,
-                      onTap: () => Navigator.pushNamed(context, it['route'] as String),
+                      onTap: () =>
+                          Navigator.pushNamed(context, it['route'] as String),
                     );
                   },
                 ),
@@ -79,21 +78,18 @@ class AccountInformationScreen extends StatelessWidget {
             ),
           ],
         ),
-      
       ),
     );
   }
 }
 
 class _InfoCard extends StatelessWidget {
-  // final IconData icon;
   final String title;
   final String subtitle;
   final Color color;
   final VoidCallback onTap;
 
   const _InfoCard({
-    // required this.icon,
     required this.title,
     required this.subtitle,
     required this.color,
@@ -105,29 +101,25 @@ class _InfoCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 70,
-        padding: const EdgeInsets.all(12),
+        height: 70.h,
+        padding: EdgeInsets.all(12.w),
         decoration: BoxDecoration(
           color: color,
-          // ignore: deprecated_member_use
-          border: Border.all(color: Color(0xff142B71).withOpacity( 0.3)),
-          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: const Color(0xff142B71).withOpacity(0.3),
+          ),
+          borderRadius: BorderRadius.circular(12.r),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.04),
               blurRadius: 6,
-              offset: const Offset(0, 3),
+              offset: Offset(0, 3.h),
             ),
           ],
         ),
         child: Row(
           children: [
-            // CircleAvatar(
-            //   radius: 28,
-            //   backgroundColor: const Color(0xFF142B71),
-            //   child: Icon(icon, color: const Color(0xFFA4BEFF), size: 24),
-            // ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16.w),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,28 +127,29 @@ class _InfoCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
-                      fontSize: 16,
+                    style: TextStyle(
+                      fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF142B71),
+                      color: const Color(0xFF142B71),
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  SizedBox(height: 6.h),
                   Text(
                     subtitle,
-                    style: const TextStyle(
-                      fontSize: 12,
+                    style: TextStyle(
+                      fontSize: 12.sp,
                       color: Colors.black54,
                     ),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: Colors.black38),
+            Icon(Icons.chevron_right, color: Colors.black38, size: 24.sp),
           ],
         ),
       ),
     );
   }
 }
+
 

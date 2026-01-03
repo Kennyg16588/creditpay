@@ -2,6 +2,7 @@ import 'package:creditpay/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:creditpay/providers/app_providers.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LoanRepaymentPage extends StatelessWidget {
   const LoanRepaymentPage({super.key});
@@ -21,54 +22,55 @@ class LoanRepaymentPage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Color(0xFF1A2F75)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           "Loan Repayment",
           style: TextStyle(
             color: Color(0xFF1A2F75),
-            fontSize: 20,
+            fontSize: 20.sp,
             fontWeight: FontWeight.w700,
           ),
         ),
       ),
 
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: EdgeInsets.symmetric(horizontal: 20.r),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 30),
+            SizedBox(height: 30.h),
 
             // -----------------------
             // Payment Options
             // -----------------------
-            const Text("Select a repayment option",
-                style: Constants.kHomeTextstyle),
-            const SizedBox(height: 12),
+            Text("Select a repayment option", style: Constants.kHomeTextstyle),
+            SizedBox(height: 12.h),
 
             Row(
               children: [
                 _paymentOption(
-                    title: "Part Payment",
-                    selected: provider.isPartPayment,
-                    onTap: () =>
-                        provider.togglePaymentType(true)),
-                const SizedBox(width: 10),
+                  title: "Part Payment",
+                  selected: provider.isPartPayment,
+                  onTap: () => provider.togglePaymentType(true),
+                ),
+                SizedBox(width: 10.w),
                 _paymentOption(
-                    title: "Full Payment",
-                    selected: !provider.isPartPayment,
-                    onTap: () =>
-                        provider.togglePaymentType(false)),
+                  title: "Full Payment",
+                  selected: !provider.isPartPayment,
+                  onTap: () => provider.togglePaymentType(false),
+                ),
               ],
             ),
 
-            const SizedBox(height: 45),
+            SizedBox(height: 45.h),
 
             // -----------------------
             // Amount Input
             // -----------------------
-            const Text("Enter the amount you want to pay",
-                style: Constants.kHomeTextstyle),
-            const SizedBox(height: 10),
+            Text(
+              "Enter the amount you want to pay",
+              style: Constants.kHomeTextstyle,
+            ),
+            SizedBox(height: 10.h),
 
             TextField(
               keyboardType: TextInputType.number,
@@ -78,84 +80,91 @@ class LoanRepaymentPage extends StatelessWidget {
                 hintStyle: Constants.kloanTextstyle,
                 prefixStyle: Constants.kloanTextstyle,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide:
-                      const BorderSide(color: Color(0xFF1A2F75), width: 1.4),
+                  borderRadius: BorderRadius.circular(12.r),
+                  borderSide: BorderSide(
+                    color: Color(0xFF1A2F75),
+                    width: 1.4.w,
+                  ),
                 ),
               ),
             ),
 
-            const SizedBox(height: 45),
+            SizedBox(height: 45.h),
 
-            const Text("Pay with",
-                style: Constants.kHomeTextstyle),
-            const SizedBox(height: 10),
+            Text("Pay with", style: Constants.kHomeTextstyle),
+            SizedBox(height: 10.h),
 
             _bankTile(),
 
-            const SizedBox(height: 45),
+            SizedBox(height: 45.h),
 
-            const Text(
+            Text(
               "You are about to make a loan repayment of",
               style: Constants.kHomeTextstyle,
             ),
 
-            const SizedBox(height: 15),
+            SizedBox(height: 15.h),
 
             _summaryBox(summary),
 
-            const SizedBox(height: 165),
+            SizedBox(height: 125.h),
 
             // -----------------------
             // Make Payment Button
             // -----------------------
             SizedBox(
               width: double.infinity,
-              height: 55,
+              height: 55.h,
               child: ElevatedButton(
-                onPressed: provider.isLoading
-                    ? null
-                    : () async {
-                        bool result = await provider.submitRepayment();
-                        if (result) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
+                onPressed:
+                    provider.isLoading
+                        ? null
+                        : () async {
+                          bool result = await provider.submitRepayment(context);
+                          if (result) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
                                 content: Text("Payment Successful"),
-                                backgroundColor: Colors.green),
-                          );
-                         Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoanApproval()),
-      );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const LoanApproval(),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
                                 content: Text("Payment Failed"),
-                                backgroundColor: Colors.red),
-                          );
-                        }
-                      },
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF1A2F75),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                 ),
-                child: provider.isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                        "Make Payment",
-                        style: TextStyle(
+                child:
+                    provider.isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : Text(
+                          "Make Payment",
+                          style: TextStyle(
                             color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600),
-                      ),
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
               ),
             ),
-
           ],
         ),
       ),
@@ -175,29 +184,37 @@ class LoanRepaymentPage extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          height: 45,
+          height: 45.h,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(10.r),
             color: selected ? const Color(0xFFE6F6FF) : Colors.white,
             border: Border.all(
-                color: selected ? const Color(0xFF142B71) : Colors.grey),
+              color: selected ? const Color(0xFF142B71) : Colors.grey,
+            ),
           ),
           child: Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(title,
-                    style: TextStyle(
-                        color: selected
+                Text(
+                  title,
+                  style: TextStyle(
+                    color:
+                        selected
                             ? const Color(0xFF142B71)
                             : Colors.grey.shade600,
-                        fontWeight: FontWeight.w600)),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 if (selected)
-                  const Padding(
-                    padding: EdgeInsets.only(left: 5),
-                    child: Icon(Icons.check_circle,
-                        color: Color(0xFF18B81E), size: 18),
-                  )
+                  Padding(
+                    padding: EdgeInsets.only(left: 5.r),
+                    child: Icon(
+                      Icons.check_circle,
+                      color: Color(0xFF18B81E),
+                      size: 18.sp,
+                    ),
+                  ),
               ],
             ),
           ),
@@ -208,30 +225,29 @@ class LoanRepaymentPage extends StatelessWidget {
 
   Widget _bankTile() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+      padding: EdgeInsets.symmetric(horizontal: 15.r, vertical: 12.r),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         border: Border.all(color: Color(0xFF142B71)),
       ),
       child: Row(
         children: [
-          Image.asset("images/access.png", height: 32),
-          const SizedBox(width: 12),
-          const Expanded(
+          Image.asset("images/access.png", height: 32.h),
+          SizedBox(width: 12.w),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Access Bank***0016",
-                    style:
-                        Constants.kloanTextstyle),
-                SizedBox(height: 3),
-                Text("Service fee 0.00",
-                    style: Constants.kloanTextstyle),
+                Text("Access Bank***0016", style: Constants.kloanTextstyle),
+                SizedBox(height: 3.h),
+                Text("Service fee 0.00", style: Constants.kloanTextstyle),
               ],
             ),
           ),
-          TextButton(onPressed: (){}, child: Text('Change',
-            style: Constants.kloanTextstyle),),
+          TextButton(
+            onPressed: () {},
+            child: Text('Change', style: Constants.kloanTextstyle),
+          ),
         ],
       ),
     );
@@ -239,19 +255,25 @@ class LoanRepaymentPage extends StatelessWidget {
 
   Widget _summaryBox(summary) {
     return Container(
-      padding: const EdgeInsets.all(15),
+      padding: EdgeInsets.all(15.r),
       decoration: BoxDecoration(
         border: Border.all(color: Color(0xFF142B71)),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
       ),
       child: Column(
         children: [
           _summaryRow("Amount", "₦${summary.amount.toStringAsFixed(0)}"),
-          const SizedBox(height: 10),
-          _summaryRow("Service fee", "₦${summary.serviceFee.toStringAsFixed(2)}"),
+          SizedBox(height: 10.h),
+          _summaryRow(
+            "Service fee",
+            "₦${summary.serviceFee.toStringAsFixed(2)}",
+          ),
           const Divider(),
-          _summaryRow("Total", "₦${summary.total.toStringAsFixed(0)}",
-              bold: true),
+          _summaryRow(
+            "Total",
+            "₦${summary.total.toStringAsFixed(0)}",
+            bold: true,
+          ),
         ],
       ),
     );
@@ -261,15 +283,12 @@ class LoanRepaymentPage extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label,
-            style: Constants.kloanTextstyle),
-        Text(value,
-            style: Constants.kloanTextstyle),
+        Text(label, style: Constants.kloanTextstyle),
+        Text(value, style: Constants.kloanTextstyle),
       ],
     );
   }
 }
-
 
 class LoanApproval extends StatelessWidget {
   const LoanApproval({super.key});
@@ -281,56 +300,67 @@ class LoanApproval extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            padding: EdgeInsets.symmetric(horizontal: 24.r),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  height: 176,
-                  width: 168,
+                  height: 176.h,
+                  width: 168.w,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    gradient: LinearGradient(colors: [
-                      const Color(0xff52D17C),
-                      const Color(0xff22918B),
-                    ]),
+                    gradient: LinearGradient(
+                      colors: [
+                        const Color(0xff52D17C),
+                        const Color(0xff22918B),
+                      ],
+                    ),
                   ),
                   child: const Center(
                     child: Icon(Icons.check, color: Colors.white, size: 90),
                   ),
                 ),
-                const SizedBox(height: 30),
-                const Text(
+                SizedBox(height: 30.h),
+                Text(
                   'Repayment Sucessful',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Color(0xFF142B71),
-                    fontSize: 26,
+                    fontSize: 26.sp,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                
-                  const SizedBox(height: 170),
+
+                SizedBox(height: 170.h),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/homepage');
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/homepage',
+                      (route) => false,
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF142B71),
-                    minimumSize: const Size(double.infinity, 50),
+                    minimumSize: Size(double.infinity, 50.sp),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Go back to Home',
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                      fontSize: 18.sp,
                     ),
                   ),
-                ),],
-                ),),),),);
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
-  }
+}

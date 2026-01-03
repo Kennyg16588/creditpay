@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "201833651330",
+    "project_id": "creditpay-a4d62",
+    "storage_bucket": "creditpay-a4d62.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:201833651330:android:e22f0ba8387f6612fa289b",
+        "android_client_info": {
+          "package_name": "com.example.creditpay"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAuPw63Gr0i896-sUV_LFehsami2C5pMg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

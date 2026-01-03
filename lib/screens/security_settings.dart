@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:creditpay/constants/constants.dart';
 
 class SecuritySettings extends StatelessWidget {
@@ -13,7 +14,7 @@ class SecuritySettings extends StatelessWidget {
       },
       {
         'title': 'Change Password',
-        'route': '/next_of_kin',
+        'route': '/change_password',
       },
       {
         'title': 'Change Transaction PIN',
@@ -21,11 +22,11 @@ class SecuritySettings extends StatelessWidget {
       },
       {
         'title': 'Reset PIN',
-        'route': '/upload_doc',
+        'route': '/set_pin',
       },
       {
         'title': 'Set Security Questions',
-        'route': '/upload_doc',
+        'route': '/security_questions',
       },
     ];
 
@@ -46,18 +47,19 @@ class SecuritySettings extends StatelessWidget {
         body: 
           Column(crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 40),
+            SizedBox(height: 30.h),
             Padding(
               padding: const EdgeInsets.only(left: 20),
               child: Text('Security Settings',
               style: Constants.kSignupTextstyle,),
             ),
+            SizedBox(height: 20.h),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: ListView.separated(
                   itemCount: items.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  separatorBuilder: (_, __) => SizedBox(height: 12.h),
                   itemBuilder: (context, index) {
                     final it = items[index];
                     return _InfoCard(
@@ -90,11 +92,11 @@ class _InfoCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 70,
+        height: 45.h,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color:Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           border: Border.all(color: Color(0xff142B71).withOpacity(0.3)),
           boxShadow: [
             BoxShadow(
@@ -113,8 +115,8 @@ class _InfoCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
-                      fontSize: 16,
+                    style:  TextStyle(
+                      fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF142B71),
                     ),
@@ -129,4 +131,5 @@ class _InfoCard extends StatelessWidget {
     );
   }
 }
+
 

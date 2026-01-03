@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:creditpay/constants/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:creditpay/providers/app_providers.dart';
@@ -21,7 +22,7 @@ class _EnterAmountState extends State<EnterAmount> {
         appBar: AppBar(
           leading: IconButton(
             onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_back_ios_new, size: 18),
+            icon:  Icon(Icons.arrow_back_ios_new, size: 18.sp),
           ),
           backgroundColor: Colors.white,
           elevation: 0,
@@ -29,11 +30,11 @@ class _EnterAmountState extends State<EnterAmount> {
         ),
 
         body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 30),
+              SizedBox(height: 30.h.h),
 
               Padding(
                 padding: const EdgeInsets.only(bottom: 40),
@@ -41,7 +42,7 @@ class _EnterAmountState extends State<EnterAmount> {
               ),
 
               Text('Type your loan amount', style: Constants.kHomeTextstyle),
-              const SizedBox(height: 60),
+              SizedBox(height: 60.h.h),
 
               TextField(
                 controller: _amountController,
@@ -50,12 +51,12 @@ class _EnterAmountState extends State<EnterAmount> {
                   hintText: "Enter amount",
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Color(0xFF142B71)),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h.h),
 
               GestureDetector(
                 onTap: () {
@@ -78,11 +79,11 @@ class _EnterAmountState extends State<EnterAmount> {
                 },
                 child: Container(
                   alignment: Alignment.center,
-                  height: 60,
+                  height: 60.h,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: const Color(0xFF142B71),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Text(
                     'Next',
@@ -97,3 +98,4 @@ class _EnterAmountState extends State<EnterAmount> {
     );
   }
 }
+
