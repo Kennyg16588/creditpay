@@ -422,8 +422,12 @@ class LoanRepay extends StatelessWidget {
                         ],
                       ),
                     ),
-                    child: const Center(
-                      child: Icon(Icons.check, color: Colors.white, size: 90),
+                    child: Center(
+                      child: Icon(
+                        Icons.check,
+                        color: Colors.white,
+                        size: 90.sp,
+                      ),
                     ),
                   ),
                   SizedBox(height: 30.h),

@@ -1,4 +1,5 @@
 import 'package:creditpay/screens/profile_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/material.dart';
 import 'package:creditpay/widgets/home.dart';
 import 'package:creditpay/widgets/transaction.dart';
@@ -47,6 +48,14 @@ class _HomePageScreenState extends State<HomePageScreen> {
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
 
+        // If not on Home tab, switch to Home tab
+        if (_selectedIndex != 0) {
+          setState(() {
+            _selectedIndex = 0;
+          });
+          return;
+        }
+
         final shouldLogout = await showDialog<bool>(
           context: context,
           builder:
@@ -85,7 +94,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
       child: Scaffold(
         body: IndexedStack(index: _selectedIndex, children: _pages),
         bottomNavigationBar: BottomNavigationBar(
-          iconSize: 30,
+          iconSize: 25.sp,
           backgroundColor: Color(0XFF142B71),
           type: BottomNavigationBarType.fixed,
           currentIndex: _selectedIndex,

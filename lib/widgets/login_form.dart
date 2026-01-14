@@ -111,7 +111,7 @@ class _LoginFormState extends State<LoginForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+              SizedBox(height: 0.1.sh),
               Text('CreditPay', style: Constants.kloginbuttonsytle),
               SizedBox(height: 20.h),
               Text('Welcome Back!', style: Constants.kloginTextstyle),
@@ -122,7 +122,7 @@ class _LoginFormState extends State<LoginForm> {
             ],
           ),
         ),
-        SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+        SizedBox(height: 0.05.sh),
         Expanded(
           child: Card(
             color: Colors.white,
@@ -162,7 +162,7 @@ class _LoginFormState extends State<LoginForm> {
                             _showPassword
                                 ? Icons.visibility
                                 : Icons.visibility_off,
-                            size: 20,
+                            size: 20.sp,
                           ),
                           onPressed:
                               () => setState(

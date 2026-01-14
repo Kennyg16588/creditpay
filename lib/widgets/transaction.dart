@@ -4,6 +4,8 @@ import 'package:creditpay/constants/constants.dart';
 import 'package:creditpay/providers/app_providers.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:creditpay/screens/receipt_screen.dart';
+import 'package:intl/intl.dart';
 
 class Transaction extends StatelessWidget {
   const Transaction({super.key});
@@ -18,22 +20,7 @@ class Transaction extends StatelessWidget {
     } else {
       return 'N/A';
     }
-
-    final months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return "${months[dateTime.month - 1]} ${dateTime.day}, ${dateTime.year}   ${dateTime.hour}:${dateTime.minute}";
+    return DateFormat('MMM dd, yyyy  hh:mm a').format(dateTime);
   }
 
   @override
@@ -79,7 +66,7 @@ class Transaction extends StatelessWidget {
                 child: Row(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: EdgeInsets.all(8.r),
                       child: Text('All', style: Constants.kSignupTextstyle),
                     ),
                     IconButton(
@@ -127,8 +114,8 @@ class Transaction extends StatelessWidget {
                                       tx['description'] ??
                                       tx['title'] ??
                                       'Transaction',
-                                  style: const TextStyle(
-                                    fontSize: 18,
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -136,12 +123,21 @@ class Transaction extends StatelessWidget {
                                 trailing: Text(
                                   "$prefix₦${amount.toStringAsFixed(2)}",
                                   style: TextStyle(
-                                    fontSize: 18,
+                                    fontSize: 14.sp,
                                     fontWeight: FontWeight.bold,
                                     color: color,
                                   ),
                                 ),
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) =>
+                                              ReceiptScreen(transaction: tx),
+                                    ),
+                                  );
+                                },
                               ),
                             );
                           },

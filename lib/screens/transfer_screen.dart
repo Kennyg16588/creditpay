@@ -7,6 +7,7 @@ import 'package:creditpay/services/paystack_service.dart';
 import 'package:creditpay/models/bank_model.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:creditpay/services/beneficiary_service.dart';
+import 'package:creditpay/models/beneficiary_model.dart';
 import 'dart:async';
 
 class TransferScreen extends StatefulWidget {
@@ -31,6 +32,8 @@ class _TransferScreenState extends State<TransferScreen> {
   bool _isVerifying = false;
   bool _saveBeneficiary = false;
 
+  List<Beneficiary> _beneficiaries = [];
+
   Timer? _debounceTimer;
   String?
   _lastVerifiedAccount; // Track last verified account to prevent duplicates
@@ -39,7 +42,17 @@ class _TransferScreenState extends State<TransferScreen> {
   void initState() {
     super.initState();
     _fetchBanks();
+    _fetchBeneficiaries();
     _accountNumberCtrl.addListener(_onAccountNumberChanged);
+  }
+
+  Future<void> _fetchBeneficiaries() async {
+    final list = await _beneficiaryService.getBeneficiaries();
+    if (mounted) {
+      setState(() {
+        _beneficiaries = list;
+      });
+    }
   }
 
   Future<void> _fetchBanks() async {
@@ -131,6 +144,33 @@ class _TransferScreenState extends State<TransferScreen> {
     }
   }
 
+  void _onSelectBeneficiary(Beneficiary beneficiary) {
+    _accountNumberCtrl.text = beneficiary.accountNumber;
+
+    // Find matching bank
+    try {
+      final bank = _banks.firstWhere(
+        (b) => b.code == beneficiary.bankCode,
+        orElse:
+            () => _banks.firstWhere(
+              (b) => b.name.toLowerCase() == beneficiary.bankName.toLowerCase(),
+            ),
+      );
+      setState(() {
+        _selectedBank = bank;
+        _verifiedAccountName = beneficiary.accountName;
+      });
+    } catch (e) {
+      // Bank not found in list (maybe new list doesn't have it)
+      // Just set prompt to manually select
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Bank information updated, please re-select bank'),
+        ),
+      );
+    }
+  }
+
   @override
   void dispose() {
     _debounceTimer?.cancel();
@@ -149,7 +189,7 @@ class _TransferScreenState extends State<TransferScreen> {
           title: Text('Select Transfer Option'),
         ),
         body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -172,10 +212,7 @@ class _TransferScreenState extends State<TransferScreen> {
               SizedBox(height: 20.h),
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  vertical: 20,
-                  horizontal: 16,
-                ),
+                padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
                 decoration: BoxDecoration(
                   color: const Color(0xFF142B71),
                   borderRadius: BorderRadius.circular(10.r),
@@ -202,10 +239,9 @@ class _TransferScreenState extends State<TransferScreen> {
               SizedBox(height: 30.h),
 
               SizedBox(
-                height: 484.h,
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(20.r),
                   decoration: BoxDecoration(
                     color: const Color(0xFFDADADA),
                     borderRadius: BorderRadius.circular(12.r),
@@ -213,7 +249,77 @@ class _TransferScreenState extends State<TransferScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(height: 20.h),
+                      if (_beneficiaries.isNotEmpty) ...[
+                        Text(
+                          "Saved Beneficiaries",
+                          style: TextStyle(
+                            color: const Color(0xFF142B71),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15.sp,
+                          ),
+                        ),
+                        SizedBox(height: 10.h),
+                        SizedBox(
+                          height: 90.h,
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: _beneficiaries.length,
+                            separatorBuilder: (_, __) => SizedBox(width: 10.w),
+                            itemBuilder: (context, index) {
+                              final b = _beneficiaries[index];
+                              return GestureDetector(
+                                onTap: () => _onSelectBeneficiary(b),
+                                child: Container(
+                                  width: 80.w,
+                                  padding: EdgeInsets.all(8.r),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8.r),
+                                    border: Border.all(
+                                      color: const Color(
+                                        0xFF142B71,
+                                      ).withOpacity(0.2),
+                                    ),
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 18.r,
+                                        backgroundColor: const Color(
+                                          0xFF142B71,
+                                        ).withOpacity(0.1),
+                                        child: Text(
+                                          b.accountName.isNotEmpty
+                                              ? b.accountName[0].toUpperCase()
+                                              : '?',
+                                          style: TextStyle(
+                                            color: const Color(0xFF142B71),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14.sp,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(height: 5.h),
+                                      Text(
+                                        b.accountName
+                                            .split(' ')
+                                            .first, // First name only
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(fontSize: 10.sp),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        SizedBox(height: 20.h),
+                      ],
+
+                      SizedBox(height: 10.h),
                       Text(
                         'Enter Amount',
                         style: TextStyle(
@@ -234,8 +340,8 @@ class _TransferScreenState extends State<TransferScreen> {
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(8),
-                                bottomLeft: Radius.circular(8),
+                                topLeft: Radius.circular(8.r),
+                                bottomLeft: Radius.circular(8.r),
                               ),
                               // border: Border.all(color: Color(0xffB3B3B3)),
                               color: Color(0xFF142B71),
@@ -260,73 +366,70 @@ class _TransferScreenState extends State<TransferScreen> {
                       SizedBox(height: 15.h),
 
                       // 🏦 Select Bank Dropdown
-                      _isLoadingBanks
-                          ? const Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: CircularProgressIndicator(),
+                      DropdownSearch<Bank>(
+                        enabled: !_isLoadingBanks,
+                        items: _banks,
+                        selectedItem: _selectedBank,
+                        itemAsString: (Bank bank) => bank.name,
+                        dropdownDecoratorProps: DropDownDecoratorProps(
+                          dropdownSearchDecoration: InputDecoration(
+                            prefixIcon: const Icon(
+                              Icons.account_balance,
+                              color: Color(0xFF142B71),
                             ),
-                          )
-                          : DropdownSearch<Bank>(
-                            items: _banks,
-                            selectedItem: _selectedBank,
-                            itemAsString: (Bank bank) => bank.name,
-                            dropdownDecoratorProps: DropDownDecoratorProps(
-                              dropdownSearchDecoration: InputDecoration(
-                                prefixIcon: const Icon(
-                                  Icons.account_balance,
-                                  color: Color(0xFF142B71),
-                                ),
-                                filled: true,
-                                fillColor: Color(0xFFDADADA),
-                                hintText: 'Select Bank',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8.r),
-                                ),
-                              ),
+                            filled: true,
+                            fillColor: const Color(0xFFDADADA),
+                            hintText:
+                                _isLoadingBanks
+                                    ? 'Loading banks...'
+                                    : 'Select Bank',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.r),
                             ),
-                            popupProps: PopupProps.menu(
-                              showSearchBox: true,
-                              searchFieldProps: TextFieldProps(
-                                decoration: InputDecoration(
-                                  fillColor: Colors.white,
-                                  hintText: 'Search bank...',
-                                  prefixIcon: const Icon(Icons.search),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8.r),
-                                  ),
-                                ),
-                              ),
-                              menuProps: MenuProps(
-                                backgroundColor: Colors.white,
+                          ),
+                        ),
+                        popupProps: PopupProps.menu(
+                          showSearchBox: true,
+                          searchFieldProps: TextFieldProps(
+                            decoration: InputDecoration(
+                              fillColor: Colors.white,
+                              hintText: 'Search bank...',
+                              prefixIcon: const Icon(Icons.search),
+                              border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.r),
                               ),
-                              itemBuilder: (context, bank, isSelected) {
-                                return ListTile(
-                                  title: Text(
-                                    bank.name,
-                                    style: TextStyle(
-                                      fontWeight:
-                                          isSelected
-                                              ? FontWeight.bold
-                                              : FontWeight.normal,
-                                    ),
-                                  ),
-                                  selected: isSelected,
-                                );
-                              },
                             ),
-                            onChanged: (Bank? value) {
-                              setState(() {
-                                _selectedBank = value;
-                                _verifiedAccountName = null;
-                              });
-                              // Trigger verification if account number is already entered
-                              if (_accountNumberCtrl.text.length == 10) {
-                                _verifyAccount();
-                              }
-                            },
                           ),
+                          menuProps: MenuProps(
+                            backgroundColor: Colors.white,
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          itemBuilder: (context, bank, isSelected) {
+                            return ListTile(
+                              title: Text(
+                                bank.name,
+                                style: TextStyle(
+                                  fontWeight:
+                                      isSelected
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
+                                ),
+                              ),
+                              selected: isSelected,
+                            );
+                          },
+                        ),
+                        onChanged: (Bank? value) {
+                          setState(() {
+                            _selectedBank = value;
+                            _verifiedAccountName = null;
+                          });
+                          // Trigger verification if account number is already entered
+                          if (_accountNumberCtrl.text.length == 10) {
+                            _verifyAccount();
+                          }
+                        },
+                      ),
                       SizedBox(height: 15.h),
 
                       // 🔢 Account Number
@@ -350,11 +453,11 @@ class _TransferScreenState extends State<TransferScreen> {
                                   counterText: '',
                                   suffixIcon:
                                       _isVerifying
-                                          ? const Padding(
+                                          ? Padding(
                                             padding: EdgeInsets.all(12.0),
                                             child: SizedBox(
-                                              width: 20,
-                                              height: 20,
+                                              width: 20.w,
+                                              height: 20.h,
                                               child: CircularProgressIndicator(
                                                 strokeWidth: 2,
                                               ),
@@ -528,7 +631,7 @@ class _TransferScreenState extends State<TransferScreen> {
                               payload: {
                                 'amount': amountText,
                                 'description':
-                                    desc.isNotEmpty ? desc : "Transfer to Bank",
+                                    "Transfer to ${_verifiedAccountName!}",
                                 'bank_name': _selectedBank!.name,
                                 'bank_code': _selectedBank!.code,
                                 'account_number': accountNumber,

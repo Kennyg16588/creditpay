@@ -162,7 +162,9 @@ class _DataScreenState extends State<DataScreen> {
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            height: 60.h,
+            width: 60.w,
+            padding: EdgeInsets.all(12.r),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
@@ -171,12 +173,7 @@ class _DataScreenState extends State<DataScreen> {
                 width: 2.w,
               ),
             ),
-            child: Image.asset(
-              assetPath,
-              height: 60.h,
-              width: 60.w,
-              fit: BoxFit.contain,
-            ),
+            child: Image.asset(assetPath, fit: BoxFit.contain),
           ),
           SizedBox(height: 6.h),
           Text(
@@ -191,7 +188,7 @@ class _DataScreenState extends State<DataScreen> {
 
   InputDecoration _inputDecoration(String hint) => InputDecoration(
     hintText: hint,
-    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+    contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
     enabledBorder: OutlineInputBorder(
       borderSide: BorderSide(color: Color(0xFF142B71)),
       borderRadius: BorderRadius.circular(8.r),

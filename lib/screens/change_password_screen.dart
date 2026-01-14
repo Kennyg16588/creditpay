@@ -52,7 +52,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
     try {
       final user = _auth.currentUser!;
-      
+
       // Reauthenticate user with current password
       final credential = EmailAuthProvider.credential(
         email: user.email!,
@@ -97,18 +97,20 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-      backgroundColor: Colors.white,
-      ),
-      body: Padding( 
-        padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 10.h), 
-        child: 
-        Column( crossAxisAlignment: CrossAxisAlignment.start,
-         children: [ Text( "Change Password", style: Constants.kSignupTextstyle, ),
-          SizedBox(height: 10.h), 
-          Text( "You can create a new password here.", 
-          style: TextStyle( fontSize: 14.sp, color: Colors.black54, ), ), 
-          SizedBox(height: 35.h),
+      appBar: AppBar(backgroundColor: Colors.white),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 10.h),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Change Password", style: Constants.kSignupTextstyle),
+            SizedBox(height: 10.h),
+            Text(
+              "You can create a new password here.",
+              style: TextStyle(fontSize: 14.sp, color: Colors.black54),
+            ),
+            SizedBox(height: 35.h),
+
             /// Current Password
             TextField(
               controller: _currentCtrl,
@@ -125,8 +127,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     _showCurrent ? Icons.visibility : Icons.visibility_off,
                     color: const Color(0XFF142B71),
                   ),
-                  onPressed: () =>
-                      setState(() => _showCurrent = !_showCurrent),
+                  onPressed: () => setState(() => _showCurrent = !_showCurrent),
                 ),
               ),
             ),
@@ -170,8 +171,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     _showConfirm ? Icons.visibility : Icons.visibility_off,
                     color: const Color(0XFF142B71),
                   ),
-                  onPressed: () =>
-                      setState(() => _showConfirm = !_showConfirm),
+                  onPressed: () => setState(() => _showConfirm = !_showConfirm),
                 ),
               ),
             ),
@@ -186,23 +186,24 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               ),
               child: TextButton(
                 onPressed: _loading ? null : _updatePassword,
-                child: _loading
-                    ? SizedBox(
-                        height: 20.h,
-                        width: 20.w,
-                        child: const CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
+                child:
+                    _loading
+                        ? SizedBox(
+                          height: 20.h,
+                          width: 20.w,
+                          child: const CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                        : Text(
+                          "Update Password",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      )
-                    : Text(
-                        "Update Password",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
               ),
             ),
           ],

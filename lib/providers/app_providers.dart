@@ -2,6 +2,7 @@ import 'package:creditpay/models/loan_repayment_model.dart';
 import 'package:creditpay/models/loan_model.dart';
 import 'package:creditpay/screens/success_screen.dart';
 import 'package:creditpay/services/cloudinary_service.dart';
+import 'package:creditpay/services/remote_config_service.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -444,7 +445,9 @@ class LoanProvider extends ChangeNotifier {
       // Calculate financials
       // Interest: 5% per month on principal
       // Monthly Repayment = (Amount / Period) + (Amount * 0.05)
-      double monthlyInterest = amount * 0.05;
+      double rate =
+          RemoteConfigService().loanInterestRate; // Fetched from Firebase
+      double monthlyInterest = amount * rate;
       double monthlyPrincipal = amount / period;
       double monthlyRepayment = monthlyPrincipal + monthlyInterest;
       double totalRepayment = monthlyRepayment * period;
@@ -587,13 +590,13 @@ class LoanRepaymentProvider with ChangeNotifier {
       );
 
       // 1. Debit Wallet
-      bool debitSuccess = await walletProvider.debitWallet(
+      final transactionResult = await walletProvider.debitWallet(
         enteredAmount,
         description: "Loan Repayment",
         type: "debit",
       );
 
-      if (!debitSuccess) {
+      if (transactionResult == null) {
         isLoading = false;
         notifyListeners();
         return false; // Debit failed (e.g. insufficient funds)
@@ -888,13 +891,16 @@ class TransactionFlowProvider extends ChangeNotifier {
     }
 
     // Attempt debit
-    bool success = await walletProvider.debitWallet(
+    final transactionResult = await walletProvider.debitWallet(
       amount,
       description: description,
       type: 'debit',
     );
 
-    if (success) {
+    if (transactionResult != null) {
+      // Update payload with real transaction details (reference, date)
+      _payload = {...?_payload, ...transactionResult};
+
       final notificationProvider = Provider.of<NotificationProvider>(
         context,
         listen: false,
@@ -925,24 +931,25 @@ class TransactionFlowProvider extends ChangeNotifier {
             'Your transaction of ₦${amount.toStringAsFixed(0)} for $description was successful.',
         icon: icon,
       );
+      return true;
     }
 
-    return success;
+    return false;
   }
 
   /// Resolve the correct success screen from the type.
   Widget resolveSuccessScreen() {
     switch (_pendingAction) {
       case TransactionType.transfer:
-        return const TransferSuccessScreen();
+        return TransferSuccessScreen(transaction: _payload ?? {});
       case TransactionType.billPayment:
-        return const BillPaymentSuccessScreen();
+        return BillPaymentSuccessScreen(transaction: _payload ?? {});
       case TransactionType.withdrawal:
-        return const WithdrawalSuccessScreen();
+        return WithdrawalSuccessScreen();
       case TransactionType.loanRepayment:
-        return const LoanRepaymentSuccessScreen();
+        return LoanRepaymentSuccessScreen(transaction: _payload ?? {});
       case TransactionType.airtimePurchase:
-        return const AirtimeSuccessScreen();
+        return AirtimeSuccessScreen(transaction: _payload ?? {});
       case TransactionType.other:
       default:
         return const GenericSuccessScreen();
@@ -1072,19 +1079,20 @@ class WalletProvider extends ChangeNotifier {
   }
 
   /// Debit the user's wallet (Subtract money)
-  /// Returns true if successful, false if insufficient funds or error.
-  Future<bool> debitWallet(
+  /// Returns transaction details map if successful, null if insufficient funds or error.
+  Future<Map<String, dynamic>?> debitWallet(
     double amount, {
     String description = "Transaction",
     String type = "debit",
   }) async {
     final uid = _auth.currentUser?.uid;
-    if (uid == null) return false;
+    if (uid == null) return null;
 
     try {
-      bool success = false;
+      Map<String, dynamic>? transactionResult;
       final userRef = _firestore.collection('users').doc(uid);
       final txRef = userRef.collection('transactions').doc();
+      final now = DateTime.now();
 
       await _firestore.runTransaction((transaction) async {
         final snapshot = await transaction.get(userRef);
@@ -1106,22 +1114,24 @@ class WalletProvider extends ChangeNotifier {
         transaction.update(userRef, {'balance': newBalance});
 
         // Add transaction ledger entry
-        transaction.set(txRef, {
+        final txData = {
           'amount': amount,
-          'type': type, // 'credit' or 'debit'
+          'type': type,
           'description': description,
-          'date': FieldValue.serverTimestamp(),
+          'date': Timestamp.fromDate(now),
           'status': 'success',
           'reference': txRef.id,
-        });
+        };
 
-        success = true;
+        transaction.set(txRef, txData);
+        transactionResult = txData;
       });
+
       debugPrint("✅ Wallet debited: -$amount");
-      return success;
+      return transactionResult;
     } catch (e) {
       debugPrint("❌ Error debiting wallet: $e");
-      return false;
+      return null;
     }
   }
 

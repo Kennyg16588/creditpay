@@ -44,9 +44,17 @@ import 'package:creditpay/screens/security_question_screen.dart';
 import 'package:creditpay/screens/fund_wallet_screen.dart';
 import 'package:creditpay/screens/forgot_password_screen.dart';
 
+import 'package:creditpay/services/push_notification_service.dart';
+import 'package:creditpay/services/remote_config_service.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
+  // Initialize Services
+  await RemoteConfigService().initialize();
+  await PushNotificationService.initialize();
+
   FlutterNativeSplash.preserve(widgetsBinding: WidgetsBinding.instance);
 
   final prefs = await SharedPreferences.getInstance();

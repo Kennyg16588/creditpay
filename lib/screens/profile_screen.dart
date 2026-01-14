@@ -187,7 +187,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: EdgeInsets.all(20.r),
               child: Container(
                 height: 165.h,
                 width: double.infinity,
@@ -196,7 +196,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   borderRadius: BorderRadius.circular(10.r),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(20.0),
+                  padding: EdgeInsets.all(20.r),
                   child: Row(
                     children: [
                       Stack(
@@ -207,7 +207,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                               if (photoUrl != null && photoUrl.isNotEmpty) {
                                 return CircleAvatar(
-                                  radius: 50,
+                                  radius: 30.r,
                                   backgroundColor: Colors.grey[300],
                                   backgroundImage: NetworkImage(photoUrl),
                                   onBackgroundImageError: (
@@ -222,19 +222,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               }
 
                               return CircleAvatar(
-                                radius: 50,
+                                radius: 30.r,
                                 backgroundColor: const Color(0xffD9D9D9B2),
                                 child: Icon(
                                   Icons.person,
-                                  size: 50.sp,
+                                  size: 30.sp,
                                   color: Colors.white,
                                 ),
                               );
                             },
                           ),
                           Positioned(
-                            width: 32,
-                            height: 32,
+                            width: 20.w,
+                            height: 20.w,
                             right: 0,
                             bottom: 0,
                             child: GestureDetector(
@@ -320,7 +320,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: EdgeInsets.all(20.r),
                 child: ListView.separated(
                   itemCount: items.length,
                   separatorBuilder: (_, __) => SizedBox(height: 20.h),
@@ -407,7 +407,7 @@ class _InfoCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         height: 45.h,
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(12.r),
         decoration: BoxDecoration(
           color: color,
           border: Border.all(color: const Color(0xff142B71).withOpacity(0.3)),

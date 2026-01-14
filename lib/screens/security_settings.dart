@@ -8,26 +8,11 @@ class SecuritySettings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = [
-      {
-        'title': 'Biometric Unlock',
-        'route': '/personal_info',
-      },
-      {
-        'title': 'Change Password',
-        'route': '/change_password',
-      },
-      {
-        'title': 'Change Transaction PIN',
-        'route': '/set_pin',
-      },
-      {
-        'title': 'Reset PIN',
-        'route': '/set_pin',
-      },
-      {
-        'title': 'Set Security Questions',
-        'route': '/security_questions',
-      },
+      {'title': 'Biometric Unlock', 'route': ''},
+      {'title': 'Change Password', 'route': '/change_password'},
+      {'title': 'Change Transaction PIN', 'route': '/set_pin'},
+      {'title': 'Reset PIN', 'route': '/set_pin'},
+      {'title': 'Set Security Questions', 'route': '/security_questions'},
     ];
 
     return SafeArea(
@@ -35,7 +20,7 @@ class SecuritySettings extends StatelessWidget {
         backgroundColor: Colors.white,
         appBar: AppBar(
           leading: IconButton(
-            onPressed: (){
+            onPressed: () {
               Navigator.pushNamed(context, '/profile');
             },
             icon: const Icon(Icons.arrow_back),
@@ -44,14 +29,16 @@ class SecuritySettings extends StatelessWidget {
           elevation: 0,
           foregroundColor: const Color(0xFF142B71),
         ),
-        body: 
-          Column(crossAxisAlignment: CrossAxisAlignment.start,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 30.h),
             Padding(
               padding: const EdgeInsets.only(left: 20),
-              child: Text('Security Settings',
-              style: Constants.kSignupTextstyle,),
+              child: Text(
+                'Security Settings',
+                style: Constants.kSignupTextstyle,
+              ),
             ),
             SizedBox(height: 20.h),
             Expanded(
@@ -64,7 +51,11 @@ class SecuritySettings extends StatelessWidget {
                     final it = items[index];
                     return _InfoCard(
                       title: it['title'] as String,
-                      onTap: () => Navigator.pushNamed(context, it['route'] as String),
+                      onTap:
+                          () => Navigator.pushNamed(
+                            context,
+                            it['route'] as String,
+                          ),
                     );
                   },
                 ),
@@ -72,7 +63,6 @@ class SecuritySettings extends StatelessWidget {
             ),
           ],
         ),
-      
       ),
     );
   }
@@ -82,10 +72,7 @@ class _InfoCard extends StatelessWidget {
   final String title;
   final VoidCallback onTap;
 
-  const _InfoCard({
-    required this.title,
-    required this.onTap,
-  });
+  const _InfoCard({required this.title, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +82,7 @@ class _InfoCard extends StatelessWidget {
         height: 45.h,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color:Colors.white,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(color: Color(0xff142B71).withOpacity(0.3)),
           boxShadow: [
@@ -115,7 +102,7 @@ class _InfoCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style:  TextStyle(
+                    style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF142B71),
@@ -131,5 +118,3 @@ class _InfoCard extends StatelessWidget {
     );
   }
 }
-
-

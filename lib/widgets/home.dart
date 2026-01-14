@@ -4,6 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:creditpay/constants/constants.dart';
 import 'package:creditpay/providers/app_providers.dart';
+import 'package:creditpay/screens/receipt_screen.dart';
+import 'package:creditpay/services/remote_config_service.dart';
+import 'package:intl/intl.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -28,8 +31,8 @@ class _HomeState extends State<Home> {
     },
     {
       'icon': Icons.receipt_long,
-      'label': 'Bills\nPayment',
-      'tooltip': 'Bills\n Payment',
+      'label': 'Bills\n',
+      'tooltip': 'Bills\n',
       'route': '/bill_payment',
     },
 
@@ -44,8 +47,8 @@ class _HomeState extends State<Home> {
   void _showNotificationsBottomSheet() {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
       ),
       builder: (context) => NotificationsBottomSheet(),
     );
@@ -60,13 +63,13 @@ class _HomeState extends State<Home> {
           children: [
             // Fixed top section (header + balance + actions)
             Padding(
-              padding: const EdgeInsets.only(bottom: 10.0),
+              padding: EdgeInsets.only(bottom: 10.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Header (avatar + notification)
                   Padding(
-                    padding: const EdgeInsets.all(20.0),
+                    padding: EdgeInsets.all(20.r),
                     child: Row(
                       children: [
                         Consumer<AuthProvider>(
@@ -78,7 +81,7 @@ class _HomeState extends State<Home> {
                               },
                               child: CircleAvatar(
                                 backgroundColor: const Color(0XFF142B71),
-                                radius: 35,
+                                radius: 25.r,
                                 backgroundImage:
                                     photoUrl != null && photoUrl.isNotEmpty
                                         ? NetworkImage(photoUrl)
@@ -87,7 +90,7 @@ class _HomeState extends State<Home> {
                                     photoUrl == null || photoUrl.isEmpty
                                         ? Icon(
                                           Icons.person,
-                                          size: 50.sp,
+                                          size: 25.sp,
                                           color: Colors.white,
                                         )
                                         : null,
@@ -115,7 +118,7 @@ class _HomeState extends State<Home> {
                                 children: [
                                   Icon(
                                     Icons.notifications,
-                                    size: 40.sp,
+                                    size: 30.sp,
                                     color: const Color(0XFF142B71),
                                   ),
                                   if (unreadCount > 0)
@@ -128,17 +131,17 @@ class _HomeState extends State<Home> {
                                           shape: BoxShape.circle,
                                           border: Border.all(
                                             color: Colors.white,
-                                            width: 2.w,
+                                            width: 0.1.w,
                                           ),
                                         ),
-                                        padding: const EdgeInsets.all(4),
+                                        padding: EdgeInsets.all(4.r),
                                         child: Text(
                                           unreadCount > 9
                                               ? '9+'
                                               : '$unreadCount',
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 10.sp,
+                                            fontSize: 8.sp,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
@@ -208,7 +211,7 @@ class _HomeState extends State<Home> {
                               children: [
                                 Expanded(
                                   child: Container(
-                                    height: 44.h,
+                                    height: 35.h,
                                     decoration: BoxDecoration(
                                       color: const Color(0xffA4BEFF),
                                       borderRadius: BorderRadius.circular(10.r),
@@ -222,7 +225,7 @@ class _HomeState extends State<Home> {
                                       },
                                       child: Text(
                                         'Current Loan',
-                                        style: Constants.kHomeTextstyle,
+                                        style: Constants.kloanTextstyle,
                                       ),
                                     ),
                                   ),
@@ -230,7 +233,7 @@ class _HomeState extends State<Home> {
                                 SizedBox(width: 16.w),
                                 Expanded(
                                   child: Container(
-                                    height: 44.h,
+                                    height: 35.h,
                                     decoration: BoxDecoration(
                                       color: const Color(0xffA4BEFF),
                                       borderRadius: BorderRadius.circular(10.r),
@@ -244,7 +247,7 @@ class _HomeState extends State<Home> {
                                       },
                                       child: Text(
                                         'Fund Wallet',
-                                        style: Constants.kHomeTextstyle,
+                                        style: Constants.kloanTextstyle,
                                       ),
                                     ),
                                   ),
@@ -259,6 +262,56 @@ class _HomeState extends State<Home> {
 
                   SizedBox(height: 20.h),
 
+                  // 🔥 NEW: Promotion Banner (controlled by Remote Config)
+                  if (RemoteConfigService().showPromotionBanner)
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 30.0.w),
+                      child: Container(
+                        padding: EdgeInsets.all(16.r),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Color(0xFF142B71), Color(0xFF4A90E2)],
+                          ),
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.celebration,
+                              color: Colors.white,
+                              size: 40.sp,
+                            ),
+                            SizedBox(width: 12.w),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Special Offer!",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16.sp,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Get 20% cashback on your first loan repayment.",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12.sp,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                  if (RemoteConfigService().showPromotionBanner)
+                    SizedBox(height: 20.h),
+
                   // Actions row
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 30.0.w),
@@ -269,8 +322,8 @@ class _HomeState extends State<Home> {
                         return Column(
                           children: [
                             Container(
-                              height: 55.9.h,
-                              width: 55.9.w,
+                              height: 45.h,
+                              width: 45.w,
                               decoration: BoxDecoration(
                                 color: const Color(0xffA4BEFF),
                                 borderRadius: BorderRadius.circular(10.r),
@@ -285,7 +338,7 @@ class _HomeState extends State<Home> {
                                       context,
                                       action['route'],
                                     ),
-                                iconSize: 32.r,
+                                iconSize: 25.r,
                                 tooltip: action['tooltip'],
                               ),
                             ),
@@ -307,9 +360,9 @@ class _HomeState extends State<Home> {
                       }),
                     ),
                   ),
-                  SizedBox(height: 20.h),
+                  SizedBox(height: 10.h),
                   Padding(
-                    padding: const EdgeInsets.only(left: 50.0),
+                    padding: EdgeInsets.only(left: 30.w),
                     child: Text(
                       'Recent transactions',
                       style: Constants.kHomeTextstyle,
@@ -341,11 +394,20 @@ class _HomeState extends State<Home> {
                         final description = tx['description'] ?? 'Transaction';
                         final type = tx['type'] ?? 'debit';
 
-                        String dateStr = 'Just now';
-                        if (tx['date'] != null && tx['date'] is Timestamp) {
-                          final dt = (tx['date'] as Timestamp).toDate();
-                          dateStr =
-                              "${dt.day}/${dt.month}/${dt.year}   ${dt.hour}:${dt.minute}";
+                        String formatDate(dynamic date) {
+                          if (date == null) return 'N/A';
+                          DateTime dateTime;
+                          if (date is Timestamp) {
+                            dateTime = date.toDate();
+                          } else if (date is String) {
+                            dateTime =
+                                DateTime.tryParse(date) ?? DateTime.now();
+                          } else {
+                            return 'N/A';
+                          }
+                          return DateFormat(
+                            'MMM dd, yyyy  hh:mm a',
+                          ).format(dateTime);
                         }
 
                         IconData icon = Icons.receipt_long;
@@ -371,8 +433,8 @@ class _HomeState extends State<Home> {
                                 borderRadius: BorderRadius.circular(10.r),
                                 color: const Color(0XFF142B71),
                               ),
-                              height: 50.h,
-                              width: 50.w,
+                              height: 35.h,
+                              width: 35.w,
                               child: Icon(icon, color: const Color(0xffA4BEFF)),
                             ),
                             title: Text(
@@ -381,16 +443,25 @@ class _HomeState extends State<Home> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            subtitle: Text(dateStr),
+                            subtitle: Text(formatDate(tx['date'])),
                             trailing: Text(
                               '${isCredit ? '+' : '-'}₦$amount',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 18,
+                                fontSize: 14.sp,
                                 color: isCredit ? Colors.green : Colors.red,
                               ),
                             ),
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) =>
+                                          ReceiptScreen(transaction: tx),
+                                ),
+                              );
+                            },
                           ),
                         );
                       },

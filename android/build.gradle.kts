@@ -14,6 +14,11 @@ subprojects {
 }
 subprojects {
     project.evaluationDependsOn(":app")
+    configurations.all {
+        resolutionStrategy {
+            force("com.google.code.gson:gson:2.11.0")
+        }
+    }
 }
 
 tasks.register<Delete>("clean") {

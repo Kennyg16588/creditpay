@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:creditpay/providers/app_providers.dart';
 import 'package:creditpay/constants/constants.dart';
+import 'package:creditpay/services/remote_config_service.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LoanApplicationPage extends StatefulWidget {
@@ -14,7 +15,10 @@ class LoanApplicationPage extends StatefulWidget {
 class _LoanApplicationPageState extends State<LoanApplicationPage> {
   final purposeController = TextEditingController();
   final periodController = TextEditingController();
-  final interestController = TextEditingController(text: "5%");
+  late final interestController = TextEditingController(
+    text:
+        "${(RemoteConfigService().loanInterestRate * 100).toStringAsFixed(0)}%",
+  );
 
   bool agreeToTerms = false;
 
@@ -253,9 +257,10 @@ class LoanApproval extends StatelessWidget {
     final nextRepaymentStr =
         "${nextRepaymentDate.day.toString().padLeft(2, '0')}/${nextRepaymentDate.month.toString().padLeft(2, '0')}/${nextRepaymentDate.year}";
 
-    const interestRateStr = '5%'; // Fixed as per prompt
+    final double rate = RemoteConfigService().loanInterestRate;
+    final interestRateStr = "${(rate * 100).toStringAsFixed(0)}%";
 
-    double monthlyInterest = amount * 0.05;
+    double monthlyInterest = amount * rate;
     double monthlyPrincipal = amount / period;
     double monthlyRepaymentVal = monthlyPrincipal + monthlyInterest;
 
@@ -263,7 +268,7 @@ class LoanApproval extends StatelessWidget {
 
     // Total Payment Logic from prompt:
     // "Total payment should be calculated based on amount borrowed plus 5% on amount borrowed per month divided accross monthly repayment and period."
-    // This is slightly worded confusingly but mathematically consistent with:
+    // This is mathematically consistent with:
     // Total = Monthly Repayment * Period.
     double totalPaymentVal = monthlyRepaymentVal * period;
     String totalPaymentStr = "₦${totalPaymentVal.toStringAsFixed(0)}";
@@ -285,105 +290,113 @@ class LoanApproval extends StatelessWidget {
           child: Center(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 24.r),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    height: 176.h,
-                    width: 168.w,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [
-                          const Color(0xff52D17C),
-                          const Color(0xff22918B),
-                        ],
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: 176.h,
+                      width: 168.w,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xff52D17C),
+                            const Color(0xff22918B),
+                          ],
+                        ),
+                      ),
+                      child: Center(
+                        child: Icon(
+                          Icons.check,
+                          color: Colors.white,
+                          size: 90.sp,
+                        ),
                       ),
                     ),
-                    child: Center(
-                      child: Icon(
-                        Icons.check,
-                        color: Colors.white,
-                        size: 90.sp,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 30.h),
-                  Text(
-                    'Congratulations!\nYour loan has been\napproved!',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Color(0xFF142B71),
-                      fontSize: 26.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 16.h),
-                  Text(
-                    'Your loan has been sucessfully\ncredited into your account!',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Color(0xFF142B71), fontSize: 18.sp),
-                  ),
-
-                  SizedBox(height: 24.h),
-
-                  // NEW: Loan summary card
-                  Card(
-                    color: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    elevation: 2,
-                    child: Padding(
-                      padding: EdgeInsets.all(16.r),
-                      child: Column(
-                        children: [
-                          _detailRow('Next Repayment Date', nextRepaymentStr),
-                          Divider(),
-                          _detailRow('Interest Rate', interestRateStr),
-                          Divider(),
-                          _detailRow('Monthly Repayment', monthlyRepaymentStr),
-                          Divider(),
-                          _detailRow('No. of Payments', period.toString()),
-                          Divider(),
-                          _detailRow('Purpose', purpose),
-                          Divider(),
-                          _detailRow(
-                            'Total Payment Amount',
-                            totalPaymentStr,
-                            emphasize: true,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: 70.h),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        '/homepage',
-                        (route) => false,
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF142B71),
-                      minimumSize: Size(double.infinity, 50.sp),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                    ),
-                    child: Text(
-                      'Go back to Home',
+                    SizedBox(height: 30.h),
+                    Text(
+                      'Congratulations!\nYour loan has been\napproved!',
+                      textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Color(0xFF142B71),
+                        fontSize: 26.sp,
                         fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 16.h),
+                    Text(
+                      'Your loan has been sucessfully\ncredited into your account!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Color(0xFF142B71),
                         fontSize: 18.sp,
                       ),
                     ),
-                  ),
-                ],
+
+                    SizedBox(height: 24.h),
+
+                    // NEW: Loan summary card
+                    Card(
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      elevation: 2,
+                      child: Padding(
+                        padding: EdgeInsets.all(16.r),
+                        child: Column(
+                          children: [
+                            _detailRow('Next Repayment Date', nextRepaymentStr),
+                            Divider(),
+                            _detailRow('Interest Rate', interestRateStr),
+                            Divider(),
+                            _detailRow(
+                              'Monthly Repayment',
+                              monthlyRepaymentStr,
+                            ),
+                            Divider(),
+                            _detailRow('No. of Payments', period.toString()),
+                            Divider(),
+                            _detailRow('Purpose', purpose),
+                            Divider(),
+                            _detailRow(
+                              'Total Payment Amount',
+                              totalPaymentStr,
+                              emphasize: true,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: 70.h),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          '/homepage',
+                          (route) => false,
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF142B71),
+                        minimumSize: Size(double.infinity, 50.sp),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                      ),
+                      child: Text(
+                        'Go back to Home',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.sp,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

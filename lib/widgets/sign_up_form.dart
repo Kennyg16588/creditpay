@@ -51,14 +51,14 @@ class _SignUpFormState extends State<SignUpForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+              SizedBox(height: 0.1.sh),
               Text('CreditPay', style: Constants.kloginbuttonsytle),
               SizedBox(height: 20.h),
             ],
           ),
         ),
 
-        SizedBox(height: MediaQuery.of(context).size.height * 0.08),
+        SizedBox(height: 0.08.sh),
 
         Expanded(
           child: Card(
